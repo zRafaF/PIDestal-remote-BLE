@@ -13,3 +13,12 @@ Service ( Generic User Property Server )
 0x1013
 
 -   Gerador de UID [https://www.uuidgenerator.net/](https://www.uuidgenerator.net/)
+
+-   Good videos about BLE
+
+    -   [https://www.youtube.com/watch?v=0Yvd_k0hbVs&ab_channel=MoThunderz](https://www.youtube.com/watch?v=0Yvd_k0hbVs&ab_channel=MoThunderz)
+    -   [https://www.youtube.com/watch?v=0Yvd_k0hbVs&ab_channel=MoThunderz](https://www.youtube.com/watch?v=0Yvd_k0hbVs&ab_channel=MoThunderz)
+
+-   [ArduinoBLE library with examples](https://github.com/arduino-libraries/ArduinoBLE)
+
+-   Example of sending array "I'm not using" [https://forum.arduino.cc/t/sending-multiple-floats-over-ble/857374](https://forum.arduino.cc/t/sending-multiple-floats-over-ble/857374)

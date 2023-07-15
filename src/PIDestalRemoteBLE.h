@@ -7,16 +7,22 @@
 #define PIDESTAL_REMOTE_BLE_H
 
 #include <ArduinoBLE.h>
-#include <Pidestal.h>
+#include <PIDestal.h>
 #include <arduino.h>
+
+// You can rename the device by defining "BLE_DEVICE_NAME"
+// WARNING: You need to define BEFORE including this library
+#ifndef BLE_DEVICE_NAME
+#define BLE_DEVICE_NAME "PIDestal Remote BLE"
+#endif
 
 // You can disable the Bluetooth during the preprocesse by definining "DO_NOT_USE_BLUETOOTH"
 // #define DO_NOT_USE_BLUETOOTH
 
 namespace PID_BLE {
 
-BLEService pidService("3e60a07c-235e-11ee-be56-0242ac120002");
-BLEStringCharacteristic pidConstsCharacteristic("13078cd8-235e-11ee-be56-0242ac120002", BLERead | BLEWrite, 512);
+extern BLEService pidService;
+extern BLEStringCharacteristic pidConstsCharacteristic;
 
 String pidToString(PID pid);
 

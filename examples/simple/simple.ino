@@ -4,7 +4,6 @@
 // https://opensource.org/licenses/MIT
 
 // Para incluir a biblioteca vá na pasta "Documentos -> Arduino -> libraries"
-#include <PIDestal.h>
 #include <PIDestalRemoteBLE.h>
 
 // Criando um PID chamado "pid1"

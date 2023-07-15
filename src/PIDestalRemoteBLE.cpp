@@ -5,6 +5,13 @@
 
 #include "PIDestalRemoteBLE.h"
 
+namespace PID_BLE {
+
+BLEService pidService("3e60a07c-235e-11ee-be56-0242ac120002");
+BLEStringCharacteristic pidConstsCharacteristic("13078cd8-235e-11ee-be56-0242ac120002", BLERead | BLEWrite, 512);
+
+}  // namespace PID_BLE
+
 String PID_BLE::pidToString(PID pid) {
     return "123,123,123";
 }
@@ -22,7 +29,7 @@ void PIDestalRemoteBLE::initialize() {
             delay(200);
     }
 
-    BLE.setLocalName(myDeviceName.c_str());
+    BLE.setLocalName(BLE_DEVICE_NAME);
 
     BLE.setAdvertisedService(PID_BLE::pidService);
     PID_BLE::pidService.addCharacteristic(PID_BLE::pidConstsCharacteristic);
