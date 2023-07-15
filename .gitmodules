@@ -1,3 +1,6 @@
 [submodule "lib/PIDestal"]
 	path = lib/PIDestal
 	url = https://github.com/HefestusTec/PIDestal
+[submodule "lib/ArduinoBLE"]
+	path = lib/ArduinoBLE
+	url = https://github.com/arduino-libraries/ArduinoBLE

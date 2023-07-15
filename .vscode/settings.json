@@ -20,7 +20,11 @@
         "unordered_set": "cpp",
         "vector": "cpp",
         "string_view": "cpp",
-        "initializer_list": "cpp"
+        "initializer_list": "cpp",
+        "regex": "cpp",
+        "*.tcc": "cpp",
+        "optional": "cpp",
+        "system_error": "cpp"
     },
     "arduino.path": "C:\\Program Files\\Arduino IDE",
     "arduino.additionalUrls": "",
