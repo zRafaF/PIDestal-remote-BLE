@@ -10,18 +10,13 @@
 #include <PIDestal.h>
 #include <arduino.h>
 
-// You can rename the device by defining "BLE_DEVICE_NAME"
-// WARNING: You need to define BEFORE including this library
-#ifndef BLE_DEVICE_NAME
-#define BLE_DEVICE_NAME "PIDestal Remote BLE"
-#endif
+#define EXTRA_INFO_ARRAY_SIZE 64
 
 // You can disable the Bluetooth during the preprocesse by definining "DO_NOT_USE_BLUETOOTH"
 // #define DO_NOT_USE_BLUETOOTH
 
 namespace PID_BLE {
 
-extern BLEService pidService;
 extern BLEStringCharacteristic pidConstsCharacteristic;
 
 String pidToString(PID pid);
@@ -30,16 +25,27 @@ String pidToString(PID pid);
 
 class PIDestalRemoteBLE {
    public:
-    PIDestalRemoteBLE(PIDestal& _pidPtr, String deviceName);
+    PIDestalRemoteBLE(
+        PIDestal& _pidPtr,
+        const char* deviceUUID);
 
     // Initialize should be called during setup()
-    void initialize();
+    void initialize(const char* deviceName);
 
     // Process should be called during loop()
     void process();
 
+    // Sets the extra info value, it The array should be of size EXTRA_INFO_ARRAY_SIZE
+    void setExtraInfo(char info[EXTRA_INFO_ARRAY_SIZE]) { strcpy(extraInfo, info); }
+    char* getExtraInfo() { return extraInfo; }
+
    private:
+    String getFormattedPackage();
+
+    BLEService pidService;
+
     String myDeviceName;
+    char extraInfo[EXTRA_INFO_ARRAY_SIZE];
     PIDestal* pidPtr;
 };
 

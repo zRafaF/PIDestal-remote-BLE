@@ -7,20 +7,25 @@
 
 namespace PID_BLE {
 
-BLEService pidService("3e60a07c-235e-11ee-be56-0242ac120002");
-BLEStringCharacteristic pidConstsCharacteristic("13078cd8-235e-11ee-be56-0242ac120002", BLERead | BLEWrite, 512);
+BLEStringCharacteristic pidConstsCharacteristic("13078cd8-235e-11ee-be56-0242ac120002", BLERead | BLEWrite | BLENotify, 512);
 
+String pidToString(PID pid) {
+    return (
+        String(pid.p, 4) +
+        "," +
+        String(pid.i, 4) +
+        "," +
+        String(pid.d, 4));
+}
 }  // namespace PID_BLE
 
-String PID_BLE::pidToString(PID pid) {
-    return "123,123,123";
-}
-
-PIDestalRemoteBLE::PIDestalRemoteBLE(PIDestal& _pidPtr, String deviceName) {
+PIDestalRemoteBLE::PIDestalRemoteBLE(
+    PIDestal& _pidPtr,
+    const char* deviceUUID) : pidService(deviceUUID) {
     pidPtr = &_pidPtr;
 }
 
-void PIDestalRemoteBLE::initialize() {
+void PIDestalRemoteBLE::initialize(const char* deviceName) {
 #ifndef DO_NOT_USE_BLUETOOTH
     if (!BLE.begin()) {
         Serial.println("starting Bluetooth® Low Energy module failed!");
@@ -29,14 +34,14 @@ void PIDestalRemoteBLE::initialize() {
             delay(200);
     }
 
-    BLE.setLocalName(BLE_DEVICE_NAME);
+    BLE.setLocalName(deviceName);
 
-    BLE.setAdvertisedService(PID_BLE::pidService);
-    PID_BLE::pidService.addCharacteristic(PID_BLE::pidConstsCharacteristic);
+    BLE.setAdvertisedService(pidService);
+    pidService.addCharacteristic(PID_BLE::pidConstsCharacteristic);
 
-    BLE.addService(PID_BLE::pidService);
+    BLE.addService(pidService);
 
-    PID_BLE::pidConstsCharacteristic.writeValue(PID_BLE::pidToString(pidPtr->getPidConsts()));
+    PID_BLE::pidConstsCharacteristic.writeValue(getFormattedPackage());
 
     BLE.advertise();
     Serial.println("Bluetooth® device active, waiting for connections...");
@@ -47,8 +52,18 @@ void PIDestalRemoteBLE::process() {
 #ifndef DO_NOT_USE_BLUETOOTH
     BLE.poll();
 
+    PID_BLE::pidConstsCharacteristic.writeValue(getFormattedPackage());
+
     String receivedValue = PID_BLE::pidConstsCharacteristic.value();
 
     Serial.println(receivedValue);
 #endif  // DO_NOT_USE_BLUETOOTH
+}
+
+String PIDestalRemoteBLE::getFormattedPackage() {
+    return (
+        PID_BLE::pidToString(
+            pidPtr->getPidConsts()) +
+        "," +
+        extraInfo);
 }

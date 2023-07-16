@@ -3,8 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-// Para incluir a biblioteca vá na pasta "Documentos -> Arduino -> libraries"
 #include <PIDestalRemoteBLE.h>
+
 
 // Criando um PID chamado "pid1"
 // Voce pode alterar os valores para ver como eles afetam
@@ -16,12 +16,13 @@ PID meuPID = {
 
 PIDestal pid1(meuPID);
 
-PIDestalRemoteBLE myRemote(pid1, "jureminha");
+PIDestalRemoteBLE myRemote(pid1, "3e60a07c-235e-11ee-be56-0242ac120002");
 
 void setup() {
     Serial.begin(115200);
-    myRemote.initialize();
+    myRemote.initialize("My Simple ESP32 Connection Name");
     // pid1.useDeltaTime = false; // Disabling the use of deltatime
+    myRemote.setExtraInfo("MINHA INFO EXTRA");
 }
 
 int t = 2000;
@@ -29,7 +30,7 @@ float result1 = 0;
 float objetivo = 0;
 
 void loop() {
-  myRemote.process();
+    myRemote.process();
     if (t > 80) {
         // O objetivo fica mudando de tempo em tempo
         objetivo = random(-100, 100);
