@@ -20,9 +20,9 @@ PIDestalRemoteBLE myRemote(pid1, "3e60a07c-235e-11ee-be56-0242ac120002");
 
 void setup() {
     Serial.begin(115200);
-    myRemote.initialize("My Simple ESP32 Connection Name");
+    myRemote.initialize("ESP_BOARD", "123123");
     // pid1.useDeltaTime = false; // Disabling the use of deltatime
-    myRemote.setExtraInfo("MINHA INFO EXTRA");
+    //myRemote.setExtraInfo("MINHA INFO EXTRA");
 }
 
 int t = 2000;

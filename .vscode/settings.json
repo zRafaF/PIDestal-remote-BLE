@@ -24,7 +24,8 @@
         "regex": "cpp",
         "*.tcc": "cpp",
         "optional": "cpp",
-        "system_error": "cpp"
+        "system_error": "cpp",
+        "future": "cpp"
     },
     "arduino.path": "C:\\Program Files\\Arduino IDE",
     "arduino.additionalUrls": "",

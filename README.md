@@ -15,7 +15,9 @@ For utilization examples please check out the `examples` directory.
 
 ## Customization
 
-When initializing the object you need to set the device's **NAME** and **UUID**.
+When initializing the object you need to set the device's **NAME**, **PASSWORD** and **UUID**.
+
+**ATTENTION** Passwords **MUST** be 6 characters long.
 
 > You can generate UUIDs at [https://www.uuidgenerator.net/](https://www.uuidgenerator.net/)
 
@@ -32,7 +34,7 @@ PIDestalRemoteBLE myRemote(pid1, "3e60a07c-235e-11ee-be56-0242ac120002");
 
 void setup() {
     Serial.begin(115200);
-    myRemote.initialize("My Simple ESP32 Connection Name");
+    myRemote.initialize("My Simple ESP32 Connection Name", "123123");
 }
 
 void loop() {
