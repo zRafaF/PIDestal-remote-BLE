@@ -7,14 +7,14 @@
 
 namespace PID_BLE {
 
-BLEStringCharacteristic getCharacteristic("0x4e", BLERead | BLENotify, 512);  // Generic User Property Status
+BLEStringCharacteristic getCharacteristic("6bf30bea-2392-11ee-be56-0242ac120002", BLERead | BLENotify, 512);
+BLEStringCharacteristic setCharacteristic("6bf30f1e-2392-11ee-be56-0242ac120002", BLEWrite, 512);
 
-BLEStringCharacteristic setCharacteristic("0x4c", BLEWrite, 512);  // Generic User Property Set
+BLEService pidService("3e60a07c-235e-11ee-be56-0242ac120002");
+
 }  // namespace PID_BLE
 
-PIDestalRemoteBLE::PIDestalRemoteBLE(
-    PIDestal& _pidPtr,
-    const char* deviceUUID) : pidService(deviceUUID) {
+PIDestalRemoteBLE::PIDestalRemoteBLE(PIDestal& _pidPtr) {
     pidPtr = &_pidPtr;
     setExtraInfo("");
 }
@@ -39,11 +39,11 @@ void PIDestalRemoteBLE::initialize(
 
     BLE.setLocalName(deviceName);
 
-    BLE.setAdvertisedService(pidService);
-    pidService.addCharacteristic(PID_BLE::getCharacteristic);
-    pidService.addCharacteristic(PID_BLE::setCharacteristic);
+    BLE.setAdvertisedService(PID_BLE::pidService);
+    PID_BLE::pidService.addCharacteristic(PID_BLE::getCharacteristic);
+    PID_BLE::pidService.addCharacteristic(PID_BLE::setCharacteristic);
 
-    BLE.addService(pidService);
+    BLE.addService(PID_BLE::pidService);
 
     PID_BLE::getCharacteristic.writeValue(getFormattedPackage());
     PID_BLE::setCharacteristic.writeValue("");

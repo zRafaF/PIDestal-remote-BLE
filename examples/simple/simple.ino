@@ -9,20 +9,20 @@
 // Criando um PID chamado "pid1"
 // Voce pode alterar os valores para ver como eles afetam
 PID meuPID = {
-    0.5,
-    0.001,
-    0.1,
+    0.5123,
+    0.0011,
+    0.1123,
 };
 
 PIDestal pid1(meuPID);
 
-PIDestalRemoteBLE myRemote(pid1, "3e60a07c-235e-11ee-be56-0242ac120002");
+PIDestalRemoteBLE myRemote(pid1);
 
 void setup() {
     Serial.begin(115200);
     myRemote.initialize("ESP_BOARD", "123123");
     // pid1.useDeltaTime = false; // Disabling the use of deltatime
-    //myRemote.setExtraInfo("MINHA INFO EXTRA");
+    myRemote.setExtraInfo("MINHA INFO EXTRA");
 }
 
 int t = 2000;

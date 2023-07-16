@@ -15,7 +15,7 @@ For utilization examples please check out the `examples` directory.
 
 ## Customization
 
-When initializing the object you need to set the device's **NAME**, **PASSWORD** and **UUID**.
+When initializing the object you need to set the device's **NAME** and **PASSWORD**.
 
 **ATTENTION** Passwords **MUST** be 6 characters long.
 
@@ -30,7 +30,7 @@ Example
 PIDestal pid1(0.2, 1, 0.002);
 
 // You can generate valid UUIDs here https://www.uuidgenerator.net/
-PIDestalRemoteBLE myRemote(pid1, "3e60a07c-235e-11ee-be56-0242ac120002");
+PIDestalRemoteBLE myRemote(pid1);
 
 void setup() {
     Serial.begin(115200);

@@ -36,15 +36,15 @@ struct ResponseBLE {
     bool valid;
 };
 
-extern BLEStringCharacteristic pidConstsCharacteristic;
+extern BLEStringCharacteristic getCharacteristic;
+extern BLEStringCharacteristic setCharacteristic;
+extern BLEService pidService;
 
 }  // namespace PID_BLE
 
 class PIDestalRemoteBLE {
    public:
-    PIDestalRemoteBLE(
-        PIDestal& _pidPtr,
-        const char* deviceUUID);
+    PIDestalRemoteBLE(PIDestal& _pidPtr);
 
     // Initialize should be called during setup()
     void initialize(const char* deviceName, char myPassword[PASSWORD_ARRAY_SIZE]);
@@ -65,7 +65,6 @@ class PIDestalRemoteBLE {
     // Decodes a received package and returns a formatted response
     PID_BLE::ResponseBLE decodeReceived(String received);
 
-    BLEService pidService;
     String myDeviceName;
     String lastReceivedValue;
     char extraInfo[EXTRA_INFO_ARRAY_SIZE] = "";
