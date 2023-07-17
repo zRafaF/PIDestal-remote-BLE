@@ -28,18 +28,6 @@ Does not care for the extra info
 
 namespace PID_BLE {
 
-struct ResponseBLE {
-    float kp;
-    float ki;
-    float kd;
-    char extra[EXTRA_INFO_ARRAY_SIZE];
-    bool valid;
-};
-
-extern BLEStringCharacteristic getCharacteristic;
-extern BLEStringCharacteristic setCharacteristic;
-extern BLEService pidService;
-
 }  // namespace PID_BLE
 
 class PIDestalRemoteBLE {
@@ -54,22 +42,43 @@ class PIDestalRemoteBLE {
 
     // Sets the extra info value, it The array should be of size EXTRA_INFO_ARRAY_SIZE
     void setExtraInfo(char info[EXTRA_INFO_ARRAY_SIZE]) { strcpy(extraInfo, info); }
+    void setExtraInfo(String info) { info.toCharArray(extraInfo, EXTRA_INFO_ARRAY_SIZE); }
     char* getExtraInfo() { return extraInfo; }
 
    private:
-    String getFormattedPackage();
+    bool checkValidPassword(String buffer);
 
-    // Encodes the PID to a string
-    String pidToString(PID pid);
+    String extractStringFromData(String buffer);
 
-    // Decodes a received package and returns a formatted response
-    PID_BLE::ResponseBLE decodeReceived(String received);
+    void processReceivedData();
+    void updateGetters();
+
+    String lastExtra;
+    PID lastPID;
+
+    String lastReceivedP;
+    String lastReceivedI;
+    String lastReceivedD;
+    String lastReceivedExtra;
 
     String myDeviceName;
-    String lastReceivedValue;
+
     char extraInfo[EXTRA_INFO_ARRAY_SIZE] = "";
     char password[PASSWORD_ARRAY_SIZE];
     PIDestal* pidPtr;
+
+    BLEService pidService;
+
+    // characteristics
+    BLEFloatCharacteristic pGetCharacteristic;
+    BLEFloatCharacteristic iGetCharacteristic;
+    BLEFloatCharacteristic dGetCharacteristic;
+    BLEStringCharacteristic extraGetCharacteristic;
+
+    BLEStringCharacteristic pSetCharacteristic;
+    BLEStringCharacteristic iSetCharacteristic;
+    BLEStringCharacteristic dSetCharacteristic;
+    BLEStringCharacteristic extraSetCharacteristic;
 };
 
 #endif  // PIDESTAL_REMOTE_BLE_H

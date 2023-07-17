@@ -5,16 +5,15 @@
 
 #include "PIDestalRemoteBLE.h"
 
-namespace PID_BLE {
-
-BLEStringCharacteristic getCharacteristic("6bf30bea-2392-11ee-be56-0242ac120002", BLERead | BLENotify, 512);
-BLEStringCharacteristic setCharacteristic("6bf30f1e-2392-11ee-be56-0242ac120002", BLEWrite, 512);
-
-BLEService pidService("3e60a07c-235e-11ee-be56-0242ac120002");
-
-}  // namespace PID_BLE
-
-PIDestalRemoteBLE::PIDestalRemoteBLE(PIDestal& _pidPtr) {
+PIDestalRemoteBLE::PIDestalRemoteBLE(PIDestal& _pidPtr) : pidService("3e60a07c-235e-11ee-be56-0242ac120002"),
+                                                          pGetCharacteristic("a5831824-2445-11ee-be56-0242ac120002", BLERead | BLENotify),
+                                                          iGetCharacteristic("a5831c2a-2445-11ee-be56-0242ac120002", BLERead | BLENotify),
+                                                          dGetCharacteristic("a58322c4-2445-11ee-be56-0242ac120002", BLERead | BLENotify),
+                                                          extraGetCharacteristic("a5832454-2445-11ee-be56-0242ac120002", BLERead | BLENotify, EXTRA_INFO_ARRAY_SIZE + PASSWORD_ARRAY_SIZE),
+                                                          pSetCharacteristic("a5832594-2445-11ee-be56-0242ac120002", BLEWrite, 32),
+                                                          iSetCharacteristic("a58326e8-2445-11ee-be56-0242ac120002", BLEWrite, 32),
+                                                          dSetCharacteristic("a58328a0-2445-11ee-be56-0242ac120002", BLEWrite, 32),
+                                                          extraSetCharacteristic("a5832a62-2445-11ee-be56-0242ac120002", BLEWrite, EXTRA_INFO_ARRAY_SIZE + PASSWORD_ARRAY_SIZE) {
     pidPtr = &_pidPtr;
     setExtraInfo("");
 }
@@ -36,17 +35,35 @@ void PIDestalRemoteBLE::initialize(
             delay(200);
         }
     }
+    strcpy(password, myPassword);
 
     BLE.setLocalName(deviceName);
 
-    BLE.setAdvertisedService(PID_BLE::pidService);
-    PID_BLE::pidService.addCharacteristic(PID_BLE::getCharacteristic);
-    PID_BLE::pidService.addCharacteristic(PID_BLE::setCharacteristic);
+    BLE.setAdvertisedService(pidService);
 
-    BLE.addService(PID_BLE::pidService);
+    pidService.addCharacteristic(pGetCharacteristic);
+    pidService.addCharacteristic(iGetCharacteristic);
+    pidService.addCharacteristic(dGetCharacteristic);
+    pidService.addCharacteristic(extraGetCharacteristic);
+    pidService.addCharacteristic(pSetCharacteristic);
+    pidService.addCharacteristic(iSetCharacteristic);
+    pidService.addCharacteristic(dSetCharacteristic);
+    pidService.addCharacteristic(extraSetCharacteristic);
 
-    PID_BLE::getCharacteristic.writeValue(getFormattedPackage());
-    PID_BLE::setCharacteristic.writeValue("");
+    BLE.addService(pidService);
+
+    lastPID = pidPtr->getPidConsts();
+    lastExtra = getExtraInfo();
+
+    pGetCharacteristic.writeValue(lastPID.p);
+    iGetCharacteristic.writeValue(lastPID.i);
+    dGetCharacteristic.writeValue(lastPID.d);
+    extraGetCharacteristic.writeValue(lastExtra);
+
+    pSetCharacteristic.writeValue("");
+    iSetCharacteristic.writeValue("");
+    dSetCharacteristic.writeValue("");
+    extraSetCharacteristic.writeValue("");
     BLE.advertise();
     Serial.println("Bluetooth® device active, waiting for connections...");
 #endif  // DO_NOT_USE_BLUETOOTH
@@ -55,38 +72,65 @@ void PIDestalRemoteBLE::initialize(
 void PIDestalRemoteBLE::process() {
 #ifndef DO_NOT_USE_BLUETOOTH
     BLE.poll();
+    updateGetters();
+    processReceivedData();
 
-    PID_BLE::getCharacteristic.writeValue(getFormattedPackage());
-
-    String receivedValue = PID_BLE::getCharacteristic.value();
-    if (lastReceivedValue != receivedValue) {
-        Serial.println(receivedValue.length());
-    }
-
-    Serial.println(receivedValue);
 #endif  // DO_NOT_USE_BLUETOOTH
 }
 
-String PIDestalRemoteBLE::getFormattedPackage() {
-    return (
-        pidToString(
-            pidPtr->getPidConsts()) +
-        "," +
-        extraInfo);
+void PIDestalRemoteBLE::updateGetters() {
+    // Updating the getters if something changed
+    if (lastPID != pidPtr->getPidConsts()) {
+        lastPID = pidPtr->getPidConsts();
+        pGetCharacteristic.writeValue(lastPID.p);
+        iGetCharacteristic.writeValue(lastPID.i);
+        dGetCharacteristic.writeValue(lastPID.d);
+    }
+    if (lastExtra != getExtraInfo()) {
+        lastExtra = getExtraInfo();
+        extraGetCharacteristic.writeValue(lastExtra);
+    }
 }
 
-String PIDestalRemoteBLE::pidToString(PID pid) {
-    return (
-        String(pid.p, 4) +
-        "," +
-        String(pid.i, 4) +
-        "," +
-        String(pid.d, 4));
+void PIDestalRemoteBLE::processReceivedData() {
+    String receivedP = pSetCharacteristic.value();
+    String receivedI = iSetCharacteristic.value();
+    String receivedD = dSetCharacteristic.value();
+    String receivedExtra = extraSetCharacteristic.value();
+
+    PID newPID = lastPID;
+
+    if (lastReceivedP != receivedP && checkValidPassword(receivedP)) {
+        newPID.p = extractStringFromData(receivedP).toFloat();
+        lastReceivedP = receivedP;
+    }
+
+    if (lastReceivedI != receivedI && checkValidPassword(receivedI)) {
+        newPID.i = extractStringFromData(receivedI).toFloat();
+        lastReceivedI = receivedI;
+    }
+
+    if (lastReceivedD != receivedD && checkValidPassword(receivedD)) {
+        newPID.d = extractStringFromData(receivedD).toFloat();
+        lastReceivedD = receivedD;
+    }
+
+    if (lastReceivedExtra != receivedExtra && checkValidPassword(receivedExtra)) {
+        setExtraInfo(extractStringFromData(receivedExtra));
+        lastReceivedExtra = receivedExtra;
+    }
+
+    if (newPID != lastPID)
+        pidPtr->setPidConsts(newPID);
 }
 
-PID_BLE::ResponseBLE PIDestalRemoteBLE::decodeReceived(String received) {
-    PID_BLE::ResponseBLE decoded = {0.0f, 0.0f, 0.0f, "", false};
-    if (received.length() < MIN_RECEIVED_SIZE) return decoded;
+bool PIDestalRemoteBLE::checkValidPassword(String buffer) {
+    if (buffer.length() < 6) return false;
+    String receivedPassword = buffer.substring(0, 6);
 
-    return decoded;
+    return receivedPassword == password;
+}
+
+String PIDestalRemoteBLE::extractStringFromData(String buffer) {
+    return buffer.substring(6, buffer.length());
 }
