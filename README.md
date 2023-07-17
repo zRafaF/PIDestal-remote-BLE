@@ -45,14 +45,12 @@ void loop() {
 }
 ```
 
-## Disabling communication
+## Including the library in Arduino IDE
 
-You can **disable** the communication by uncommenting `DO_NOT_USE_BLUETOOTH` on the library's header file `PIDestalRemoteBLE.h`.
+1. Clone this repo into `Documents -> Arduino -> libraries`.
+2. Reload the IDE
 
-```cpp
-// You can disable the Bluetooth during the preprocesse by definining "DO_NOT_USE_BLUETOOTH"
-#define DO_NOT_USE_BLUETOOTH
-```
+> If something go wrong check [Add libraries to Arduino IDE](https://support.arduino.cc/hc/en-us/articles/5145457742236-Add-libraries-to-Arduino-IDE)
 
 ## Default UUIDs
 
@@ -87,8 +85,16 @@ Example `PIDestalRemoteBLE.h`
 
 ```cpp
 // Define at PIDestalRemoteBLE.h
-
 #define DEFAULT_SERVICE_UUID "3e60a07c-235e-11ee-be56-0242ac120002"
+```
+
+## Disabling communication
+
+You can **disable** the communication by uncommenting `DO_NOT_USE_BLUETOOTH` on the library's header file `PIDestalRemoteBLE.h`.
+
+```cpp
+// You can disable the Bluetooth during the preprocesse by definining "DO_NOT_USE_BLUETOOTH"
+#define DO_NOT_USE_BLUETOOTH
 ```
 
 ## References
