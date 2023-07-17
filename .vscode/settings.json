@@ -25,7 +25,10 @@
         "*.tcc": "cpp",
         "optional": "cpp",
         "system_error": "cpp",
-        "future": "cpp"
+        "future": "cpp",
+        "memory": "cpp",
+        "functional": "cpp",
+        "istream": "cpp"
     },
     "arduino.path": "C:\\Program Files\\Arduino IDE",
     "arduino.additionalUrls": "",
