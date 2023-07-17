@@ -5,7 +5,7 @@
 
 #include "PIDestalRemoteBLE.h"
 
-PIDestalRemoteBLE::PIDestalRemoteBLE(PIDestal& _pidPtr) : pidService("3e60a07c-235e-11ee-be56-0242ac120002"),
+PIDestalRemoteBLE::PIDestalRemoteBLE(PIDestal& _pidPtr) : pidService(DEFAULT_SERVICE_UUID),
                                                           pGetCharacteristic("a5831824-2445-11ee-be56-0242ac120002", BLERead | BLENotify),
                                                           iGetCharacteristic("a5831c2a-2445-11ee-be56-0242ac120002", BLERead | BLENotify),
                                                           dGetCharacteristic("a58322c4-2445-11ee-be56-0242ac120002", BLERead | BLENotify),

@@ -9,9 +9,9 @@
 
 This library was made for the ESP32 and makes use of the Bluetooth Low Energy, it exposes ways to set and get **PID constants** and a parameter **extraInfo** that can be customized by the user.
 
-It is done [GATTs](https://www.bluetooth.com/bluetooth-resources/intro-to-bluetooth-gap-gatt/) for getters and setters. There is a simple validation on the setter that checks if the password is correct.
+It is done using [GATT](https://www.bluetooth.com/bluetooth-resources/intro-to-bluetooth-gap-gatt/) with getters and setters. There is a simple validation on the setter that checks if the password is correct. The getters are openly distributed and can be subscribed to.
 
-> **ATTENTION** the communication is totally **unencrypted** so a middle man attack is very easily done if the attacker knows about the data format being sent.
+> **ATTENTION:** The communication is totally **unencrypted** so a middle man attack is very easily done if the attacker knows about the data format being sent.
 
 For utilization examples please check out the `examples` directory.
 
@@ -20,8 +20,6 @@ For utilization examples please check out the `examples` directory.
 When initializing the object you need to set the device's **NAME** and **PASSWORD**.
 
 **ATTENTION** Passwords **MUST** be 6 characters long.
-
-> You can generate UUIDs at [https://www.uuidgenerator.net/](https://www.uuidgenerator.net/)
 
 Example
 
@@ -50,6 +48,43 @@ You can **disable** the communication by uncommenting `DO_NOT_USE_BLUETOOTH` on 
 ```cpp
 // You can disable the Bluetooth during the preprocesse by definining "DO_NOT_USE_BLUETOOTH"
 #define DO_NOT_USE_BLUETOOTH
+```
+
+## Default UUIDs
+
+-   Service UUID: `3e60a07c-235e-11ee-be56-0242ac120002`.
+
+Characteristics:
+
+-   Getters:
+
+    -   Constant P [`float`]: `a5831824-2445-11ee-be56-0242ac120002`.
+    -   Constant I [`float`]: `a5831c2a-2445-11ee-be56-0242ac120002`.
+    -   Constant D [`float`]: `a58322c4-2445-11ee-be56-0242ac120002`.
+    -   Extra [`String`]: `a5832454-2445-11ee-be56-0242ac120002`.
+
+-   Setters:
+    -   Constant P [`String`]: `a5832594-2445-11ee-be56-0242ac120002`.
+    -   Constant I [`String`]: `a58326e8-2445-11ee-be56-0242ac120002`.
+    -   Constant D [`String`]: `a58328a0-2445-11ee-be56-0242ac120002`.
+    -   Extra [`String`]: `a5832a62-2445-11ee-be56-0242ac120002`.
+
+### Changing the service UUID
+
+The service UUID defines "in simple terms" the device's id.
+
+By default it's set to `3e60a07c-235e-11ee-be56-0242ac120002`.
+
+> You can generate UUIDs at [https://www.uuidgenerator.net/](https://www.uuidgenerator.net/)
+
+You can modify the default UUID by replacing the `#define DEFAULT_SERVICE_UUID` located at `PIDestalRemoteBLE.h`.
+
+Example `PIDestalRemoteBLE.h`
+
+```cpp
+// Define at PIDestalRemoteBLE.h
+
+#define DEFAULT_SERVICE_UUID "3e60a07c-235e-11ee-be56-0242ac120002"
 ```
 
 ## References

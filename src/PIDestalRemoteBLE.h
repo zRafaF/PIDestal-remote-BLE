@@ -14,6 +14,8 @@
 
 #define PASSWORD_ARRAY_SIZE 6
 
+#define DEFAULT_SERVICE_UUID "3e60a07c-235e-11ee-be56-0242ac120002"
+
 /*
 Minimum received package size.
 
