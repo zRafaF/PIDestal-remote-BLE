@@ -28,10 +28,6 @@ Does not care for the extra info
 // You can disable the Bluetooth during the preprocesse by definining "DO_NOT_USE_BLUETOOTH"
 // #define DO_NOT_USE_BLUETOOTH
 
-namespace PID_BLE {
-
-}  // namespace PID_BLE
-
 class PIDestalRemoteBLE {
    public:
     PIDestalRemoteBLE(PIDestal& _pidPtr);
