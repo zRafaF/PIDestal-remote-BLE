@@ -9,9 +9,11 @@
 
 This library was made for the ESP32 and makes use of the Bluetooth Low Energy, it exposes ways to set and get **PID constants** and a parameter **extraInfo** that can be customized by the user.
 
-For utilization examples please check out the `examples` directory.
+It is done [GATTs](https://www.bluetooth.com/bluetooth-resources/intro-to-bluetooth-gap-gatt/) for getters and setters. There is a simple validation on the setter that checks if the password is correct.
 
-> Currently only **4 decimal places** are being sent.
+> **ATTENTION** the communication is totally **unencrypted** so a middle man attack is very easily done if the attacker knows about the data format being sent.
+
+For utilization examples please check out the `examples` directory.
 
 ## Customization
 
@@ -29,12 +31,11 @@ Example
 
 PIDestal pid1(0.2, 1, 0.002);
 
-// You can generate valid UUIDs here https://www.uuidgenerator.net/
 PIDestalRemoteBLE myRemote(pid1);
 
 void setup() {
     Serial.begin(115200);
-    myRemote.initialize("My Simple ESP32 Connection Name", "123123");
+    myRemote.initialize("ESP_BOARD", "123123");
 }
 
 void loop() {
