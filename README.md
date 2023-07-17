@@ -15,13 +15,17 @@ It is done using [GATT](https://www.bluetooth.com/bluetooth-resources/intro-to-b
 
 For utilization examples please check out the `examples` directory.
 
-## Customization
+## Usage
 
-When initializing the object you need to set the device's **NAME** and **PASSWORD**.
+1. Create a new `PIDestalRemoteBLE` object and pass a `PIDestal` object by reference, PIDestalRemoteBLE will modify the PID values and keep the server updated.
 
-**ATTENTION** Passwords **MUST** be 6 characters long.
+2. Call the method `initialize()` in the Arduino's `setup()` function. You also need to provide the device's **NAME** and **PASSWORD**.
 
-Example
+> **ATTENTION:** Passwords **MUST** be 6 characters long.
+
+3. Call the method `process()` in the Arduino's `loop()` function.
+
+Example:
 
 ```cpp
 #include <PIDestal.h>
