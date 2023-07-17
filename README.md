@@ -15,6 +15,8 @@ It is done using [GATT](https://www.bluetooth.com/bluetooth-resources/intro-to-b
 
 For utilization examples please check out the `examples` directory.
 
+> Currently the data is formatted to a string and is sent with **8 decimal places** of precision.
+
 ## Usage
 
 1. Create a new `PIDestalRemoteBLE` object and pass a `PIDestal` object by reference, PIDestalRemoteBLE will modify the PID values and keep the server updated.
@@ -60,9 +62,9 @@ Characteristics:
 
 -   Getters:
 
-    -   Constant P [`float`]: `a5831824-2445-11ee-be56-0242ac120002`.
-    -   Constant I [`float`]: `a5831c2a-2445-11ee-be56-0242ac120002`.
-    -   Constant D [`float`]: `a58322c4-2445-11ee-be56-0242ac120002`.
+    -   Constant P [`String`]: `a5831824-2445-11ee-be56-0242ac120002`.
+    -   Constant I [`String`]: `a5831c2a-2445-11ee-be56-0242ac120002`.
+    -   Constant D [`String`]: `a58322c4-2445-11ee-be56-0242ac120002`.
     -   Extra [`String`]: `a5832454-2445-11ee-be56-0242ac120002`.
 
 -   Setters:

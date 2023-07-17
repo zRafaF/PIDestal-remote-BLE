@@ -6,9 +6,9 @@
 #include "PIDestalRemoteBLE.h"
 
 PIDestalRemoteBLE::PIDestalRemoteBLE(PIDestal& _pidPtr) : pidService(DEFAULT_SERVICE_UUID),
-                                                          pGetCharacteristic("a5831824-2445-11ee-be56-0242ac120002", BLERead | BLENotify),
-                                                          iGetCharacteristic("a5831c2a-2445-11ee-be56-0242ac120002", BLERead | BLENotify),
-                                                          dGetCharacteristic("a58322c4-2445-11ee-be56-0242ac120002", BLERead | BLENotify),
+                                                          pGetCharacteristic("a5831824-2445-11ee-be56-0242ac120002", BLERead | BLENotify, 32),
+                                                          iGetCharacteristic("a5831c2a-2445-11ee-be56-0242ac120002", BLERead | BLENotify, 32),
+                                                          dGetCharacteristic("a58322c4-2445-11ee-be56-0242ac120002", BLERead | BLENotify, 32),
                                                           extraGetCharacteristic("a5832454-2445-11ee-be56-0242ac120002", BLERead | BLENotify, EXTRA_INFO_ARRAY_SIZE + PASSWORD_ARRAY_SIZE),
                                                           pSetCharacteristic("a5832594-2445-11ee-be56-0242ac120002", BLEWrite, 32),
                                                           iSetCharacteristic("a58326e8-2445-11ee-be56-0242ac120002", BLEWrite, 32),
@@ -55,9 +55,9 @@ void PIDestalRemoteBLE::initialize(
     lastPID = pidPtr->getPidConsts();
     lastExtra = getExtraInfo();
 
-    pGetCharacteristic.writeValue(lastPID.p);
-    iGetCharacteristic.writeValue(lastPID.i);
-    dGetCharacteristic.writeValue(lastPID.d);
+    pGetCharacteristic.writeValue(String(lastPID.p, 8));
+    iGetCharacteristic.writeValue(String(lastPID.i, 8));
+    dGetCharacteristic.writeValue(String(lastPID.d, 8));
     extraGetCharacteristic.writeValue(lastExtra);
 
     pSetCharacteristic.writeValue("");
@@ -75,6 +75,7 @@ void PIDestalRemoteBLE::process() {
     updateGetters();
     processReceivedData();
 
+    Serial.println(iGetCharacteristic.value());
 #endif  // DO_NOT_USE_BLUETOOTH
 }
 
@@ -82,9 +83,9 @@ void PIDestalRemoteBLE::updateGetters() {
     // Updating the getters if something changed
     if (lastPID != pidPtr->getPidConsts()) {
         lastPID = pidPtr->getPidConsts();
-        pGetCharacteristic.writeValue(lastPID.p);
-        iGetCharacteristic.writeValue(lastPID.i);
-        dGetCharacteristic.writeValue(lastPID.d);
+        pGetCharacteristic.writeValue(String(lastPID.p, 8));
+        iGetCharacteristic.writeValue(String(lastPID.i, 8));
+        dGetCharacteristic.writeValue(String(lastPID.d, 8));
     }
     if (lastExtra != getExtraInfo()) {
         lastExtra = getExtraInfo();

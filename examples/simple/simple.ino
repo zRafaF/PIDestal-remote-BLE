@@ -54,7 +54,6 @@ void loop() {
     Serial.print("\t");
     Serial.println(result1);
     */
-
     t += 1;
     delay(30);
 }

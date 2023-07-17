@@ -68,9 +68,9 @@ class PIDestalRemoteBLE {
     BLEService pidService;
 
     // characteristics
-    BLEFloatCharacteristic pGetCharacteristic;
-    BLEFloatCharacteristic iGetCharacteristic;
-    BLEFloatCharacteristic dGetCharacteristic;
+    BLEStringCharacteristic pGetCharacteristic;
+    BLEStringCharacteristic iGetCharacteristic;
+    BLEStringCharacteristic dGetCharacteristic;
     BLEStringCharacteristic extraGetCharacteristic;
 
     BLEStringCharacteristic pSetCharacteristic;
