@@ -42,6 +42,7 @@ void loop() {
     // Calcula o PID e adiciona ao resultado
     result1 += pid1.calculate(objetivo - result1);
 
+    /*
     // Cria um teto maximo e min para o grafico nao ficar mudando toda hora
     Serial.print(100);
     Serial.print("\t");
@@ -52,6 +53,7 @@ void loop() {
     Serial.print(objetivo);
     Serial.print("\t");
     Serial.println(result1);
+    */
 
     t += 1;
     delay(30);

@@ -72,7 +72,13 @@ void PIDestalRemoteBLE::initialize(
 void PIDestalRemoteBLE::process() {
 #ifndef DO_NOT_USE_BLUETOOTH
     BLE.poll();
+    updateGetters();
+    processReceivedData();
 
+#endif  // DO_NOT_USE_BLUETOOTH
+}
+
+void PIDestalRemoteBLE::updateGetters() {
     // Updating the getters if something changed
     if (lastPID != pidPtr->getPidConsts()) {
         lastPID = pidPtr->getPidConsts();
@@ -84,27 +90,47 @@ void PIDestalRemoteBLE::process() {
         lastExtra = getExtraInfo();
         extraGetCharacteristic.writeValue(lastExtra);
     }
+}
 
-    // The received values
+void PIDestalRemoteBLE::processReceivedData() {
     String receivedP = pSetCharacteristic.value();
     String receivedI = iSetCharacteristic.value();
     String receivedD = dSetCharacteristic.value();
     String receivedExtra = extraSetCharacteristic.value();
 
-    Serial.println(receivedP);
+    PID newPID = lastPID;
 
-    Serial.println(checkValidPassword(receivedP));
+    if (lastReceivedP != receivedP && checkValidPassword(receivedP)) {
+        newPID.p = extractStringFromData(receivedP).toFloat();
+        lastReceivedP = receivedP;
+    }
 
-#endif  // DO_NOT_USE_BLUETOOTH
+    if (lastReceivedI != receivedI && checkValidPassword(receivedI)) {
+        newPID.i = extractStringFromData(receivedI).toFloat();
+        lastReceivedI = receivedI;
+    }
+
+    if (lastReceivedD != receivedD && checkValidPassword(receivedD)) {
+        newPID.d = extractStringFromData(receivedD).toFloat();
+        lastReceivedD = receivedD;
+    }
+
+    if (lastReceivedExtra != receivedExtra && checkValidPassword(receivedExtra)) {
+        setExtraInfo(extractStringFromData(receivedExtra));
+        lastReceivedExtra = receivedExtra;
+    }
+
+    if (newPID != lastPID)
+        pidPtr->setPidConsts(newPID);
 }
 
 bool PIDestalRemoteBLE::checkValidPassword(String buffer) {
-    Serial.print("myPass: ");
-    Serial.println(password);
-    Serial.print("ReceivedPass: ");
-    Serial.println(buffer);
     if (buffer.length() < 6) return false;
     String receivedPassword = buffer.substring(0, 6);
 
     return receivedPassword == password;
+}
+
+String PIDestalRemoteBLE::extractStringFromData(String buffer) {
+    return buffer.substring(6, buffer.length());
 }

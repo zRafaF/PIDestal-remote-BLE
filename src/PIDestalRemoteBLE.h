@@ -42,14 +42,27 @@ class PIDestalRemoteBLE {
 
     // Sets the extra info value, it The array should be of size EXTRA_INFO_ARRAY_SIZE
     void setExtraInfo(char info[EXTRA_INFO_ARRAY_SIZE]) { strcpy(extraInfo, info); }
+    void setExtraInfo(String info) { info.toCharArray(extraInfo, EXTRA_INFO_ARRAY_SIZE); }
     char* getExtraInfo() { return extraInfo; }
 
    private:
     bool checkValidPassword(String buffer);
 
-    String myDeviceName;
+    String extractStringFromData(String buffer);
+
+    void processReceivedData();
+    void updateGetters();
+
     String lastExtra;
     PID lastPID;
+
+    String lastReceivedP;
+    String lastReceivedI;
+    String lastReceivedD;
+    String lastReceivedExtra;
+
+    String myDeviceName;
+
     char extraInfo[EXTRA_INFO_ARRAY_SIZE] = "";
     char password[PASSWORD_ARRAY_SIZE];
     PIDestal* pidPtr;
