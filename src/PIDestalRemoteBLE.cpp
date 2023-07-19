@@ -118,24 +118,24 @@ void PIDestalRemoteBLE::processReceivedData() {
 
     PID newPID = lastPID;
 
-    if (lastReceivedP != receivedP && checkValidPassword(receivedP)) {
+    if (checkValidPassword(receivedP)) {
         newPID.p = extractStringFromData(receivedP).toFloat();
         lastReceivedP = receivedP;
     }
 
-    if (lastReceivedI != receivedI && checkValidPassword(receivedI)) {
+    if (checkValidPassword(receivedI)) {
         newPID.i = extractStringFromData(receivedI).toFloat();
         lastReceivedI = receivedI;
     }
 
-    if (lastReceivedD != receivedD && checkValidPassword(receivedD)) {
+    if (checkValidPassword(receivedD)) {
         newPID.d = extractStringFromData(receivedD).toFloat();
         lastReceivedD = receivedD;
     }
 
-    if (lastReceivedExtra != receivedExtra && checkValidPassword(receivedExtra)) {
+    if (checkValidPassword(receivedExtra)) {
         setExtraInfo(extractStringFromData(receivedExtra));
-        lastReceivedExtra = receivedExtra;
+        Serial.println(receivedExtra);
     }
 
     if (newPID != lastPID)
