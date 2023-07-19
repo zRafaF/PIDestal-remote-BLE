@@ -133,7 +133,7 @@ void PIDestalRemoteBLE::processReceivedData() {
         lastReceivedD = receivedD;
     }
 
-    if (getExtraInfo() != receivedExtra && checkValidPassword(receivedExtra)) {
+    if (getExtraInfo() != receivedExtra.toCharArray() && checkValidPassword(receivedExtra)) {
         setExtraInfo(extractStringFromData(receivedExtra));
         lastReceivedExtra = receivedExtra;
         Serial.print(receivedExtra);
