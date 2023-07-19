@@ -33,7 +33,7 @@ Does not care for the extra info
 
 class PIDestalRemoteBLE {
    public:
-    PIDestalRemoteBLE(PIDestal* _pidAPtr);
+    PIDestalRemoteBLE(PIDestal* _pidPtr);
     PIDestalRemoteBLE(PIDestal* _pidArrayPtr[], int arraySize);
 
     // Initialize should be called during setup()
