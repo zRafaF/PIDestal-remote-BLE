@@ -118,17 +118,17 @@ void PIDestalRemoteBLE::processReceivedData() {
 
     PID newPID = lastPID;
 
-    if (lastPID.p != receivedP && checkValidPassword(receivedP)) {
+    if (lastReceivedP != receivedP && checkValidPassword(receivedP)) {
         newPID.p = extractStringFromData(receivedP).toFloat();
         lastReceivedP = receivedP;
     }
 
-    if (lastPID.i != receivedI && checkValidPassword(receivedI)) {
+    if (lastReceivedI != receivedI && checkValidPassword(receivedI)) {
         newPID.i = extractStringFromData(receivedI).toFloat();
         lastReceivedI = receivedI;
     }
 
-    if (lastPID.d != receivedD && checkValidPassword(receivedD)) {
+    if (lastReceivedD != receivedD && checkValidPassword(receivedD)) {
         newPID.d = extractStringFromData(receivedD).toFloat();
         lastReceivedD = receivedD;
     }
