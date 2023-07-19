@@ -37,7 +37,7 @@ class PIDestalRemoteBLE {
     PIDestalRemoteBLE(PIDestal* _pidArrayPtr[], int arraySize);
 
     // Initialize should be called during setup()
-    void initialize(const char* deviceName, const char* myPassword[PASSWORD_ARRAY_SIZE]);
+    void initialize(const char* deviceName, const char* myPassword);
 
     // Process should be called during loop()
     void process();
@@ -47,8 +47,8 @@ class PIDestalRemoteBLE {
     void setExtraInfo(String info) { info.toCharArray(extraInfo, EXTRA_INFO_ARRAY_SIZE); }
     char* getExtraInfo() { return extraInfo; }
 
-    PIDestal getFirstPidConsts() { return ptrArray ? ptrArray[0]->getPidConsts() : PIDestal(0, 0, 0); }
-    void setPidArrayConsts(PIDestal newPID) {
+    PID getFirstPidConsts() { return ptrArray ? ptrArray[0]->getPidConsts() : PIDestal(0, 0, 0); }
+    void setPidArrayConsts(PID newPID) {
         for (int i = 0; i < ptrArraySize; i++) {
             ptrArray[i]->setPidConsts(newPID);  // Accessing the x variable of each PIDestal object
         }

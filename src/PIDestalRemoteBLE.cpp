@@ -38,7 +38,7 @@ PIDestalRemoteBLE::PIDestalRemoteBLE(
 
 void PIDestalRemoteBLE::initialize(
     const char* deviceName,
-    char myPassword[PASSWORD_ARRAY_SIZE]) {
+    const char* myPassword) {
 #ifndef DO_NOT_USE_BLUETOOTH
     if (!BLE.begin()) {
         Serial.println("starting Bluetooth® Low Energy module failed!");
