@@ -43,11 +43,11 @@ class PIDestalRemoteBLE {
     void process();
 
     // Sets the extra info value, it The array should be of size EXTRA_INFO_ARRAY_SIZE
-    void setExtraInfo(const char* info[EXTRA_INFO_ARRAY_SIZE]) { strcpy(extraInfo, info); }
+    void setExtraInfo(const char* info) { strcpy(extraInfo, info); }
     void setExtraInfo(String info) { info.toCharArray(extraInfo, EXTRA_INFO_ARRAY_SIZE); }
     char* getExtraInfo() { return extraInfo; }
 
-    PID getFirstPidConsts() { return ptrArray ? ptrArray[0]->getPidConsts() : PIDestal(0, 0, 0); }
+    PID getFirstPidConsts() { return ptrArray ? ptrArray[0]->getPidConsts() : PID{0, 0, 0}; }
     void setPidArrayConsts(PID newPID) {
         for (int i = 0; i < ptrArraySize; i++) {
             ptrArray[i]->setPidConsts(newPID);  // Accessing the x variable of each PIDestal object
