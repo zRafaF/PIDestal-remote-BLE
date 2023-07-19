@@ -19,6 +19,17 @@ For utilization examples please check out the `examples` directory.
 
 ## Usage
 
+### Setup
+
+You need to install the following libraries:
+
+-   [ArduinoBLE [1.3.5]](https://github.com/arduino-libraries/ArduinoBLE)
+-   [PIDestal[0.0.1]](https://github.com/HefestusTec/PIDestal)
+
+> The versions are the ones that were tested and worked, you can try to get a newer version.
+
+### Code
+
 1. Create a new `PIDestalRemoteBLE` object and pass a `PIDestal` object by reference, PIDestalRemoteBLE will modify the PID values and keep the server updated.
 
 2. Call the method `initialize()` in the Arduino's `setup()` function. You also need to provide the device's **NAME** and **PASSWORD**.

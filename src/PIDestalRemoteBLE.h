@@ -33,7 +33,7 @@ class PIDestalRemoteBLE {
     PIDestalRemoteBLE(PIDestal& _pidPtr);
 
     // Initialize should be called during setup()
-    void initialize(const char* deviceName, char myPassword[PASSWORD_ARRAY_SIZE]);
+    void initialize(const char* deviceName, const char* myPassword[PASSWORD_ARRAY_SIZE]);
 
     // Process should be called during loop()
     void process();
