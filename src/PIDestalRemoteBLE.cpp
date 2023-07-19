@@ -5,16 +5,34 @@
 
 #include "PIDestalRemoteBLE.h"
 
-PIDestalRemoteBLE::PIDestalRemoteBLE(PIDestal& _pidPtr) : pidService(DEFAULT_SERVICE_UUID),
-                                                          pGetCharacteristic("a5831824-2445-11ee-be56-0242ac120002", BLERead | BLENotify, 32),
-                                                          iGetCharacteristic("a5831c2a-2445-11ee-be56-0242ac120002", BLERead | BLENotify, 32),
-                                                          dGetCharacteristic("665e5ab6-24f7-11ee-be56-0242ac120002", BLERead | BLENotify, 32),
-                                                          extraGetCharacteristic("a5832454-2445-11ee-be56-0242ac120002", BLERead | BLENotify, EXTRA_INFO_ARRAY_SIZE + PASSWORD_ARRAY_SIZE),
-                                                          pSetCharacteristic("a5832594-2445-11ee-be56-0242ac120002", BLEWrite, 32),
-                                                          iSetCharacteristic("a58326e8-2445-11ee-be56-0242ac120002", BLEWrite, 32),
-                                                          dSetCharacteristic("ebf99fc0-24f5-11ee-be56-0242ac120002", BLEWrite, 32),
-                                                          extraSetCharacteristic("a5832a62-2445-11ee-be56-0242ac120002", BLEWrite, EXTRA_INFO_ARRAY_SIZE + PASSWORD_ARRAY_SIZE) {
-    pidPtr = &_pidPtr;
+PIDestalRemoteBLE::PIDestalRemoteBLE(
+    PIDestal* _pidAPtr) : pidService(DEFAULT_SERVICE_UUID),
+                          pGetCharacteristic("a5831824-2445-11ee-be56-0242ac120002", BLERead | BLENotify, 32),
+                          iGetCharacteristic("a5831c2a-2445-11ee-be56-0242ac120002", BLERead | BLENotify, 32),
+                          dGetCharacteristic("665e5ab6-24f7-11ee-be56-0242ac120002", BLERead | BLENotify, 32),
+                          extraGetCharacteristic("a5832454-2445-11ee-be56-0242ac120002", BLERead | BLENotify, EXTRA_INFO_ARRAY_SIZE + PASSWORD_ARRAY_SIZE),
+                          pSetCharacteristic("a5832594-2445-11ee-be56-0242ac120002", BLEWrite, 32),
+                          iSetCharacteristic("a58326e8-2445-11ee-be56-0242ac120002", BLEWrite, 32),
+                          dSetCharacteristic("ebf99fc0-24f5-11ee-be56-0242ac120002", BLEWrite, 32),
+                          extraSetCharacteristic("a5832a62-2445-11ee-be56-0242ac120002", BLEWrite, EXTRA_INFO_ARRAY_SIZE + PASSWORD_ARRAY_SIZE),
+                          ptrArray(_pidPtr ? &_pidPtr : nullptr),
+                          ptrArraySize(_pidPtr ? 1 : 0) {
+    setExtraInfo("");
+}
+
+PIDestalRemoteBLE::PIDestalRemoteBLE(
+    PIDestal* _pidArrayPtr[],
+    int arraySize = 1) : pidService(DEFAULT_SERVICE_UUID),
+                         pGetCharacteristic("a5831824-2445-11ee-be56-0242ac120002", BLERead | BLENotify, 32),
+                         iGetCharacteristic("a5831c2a-2445-11ee-be56-0242ac120002", BLERead | BLENotify, 32),
+                         dGetCharacteristic("665e5ab6-24f7-11ee-be56-0242ac120002", BLERead | BLENotify, 32),
+                         extraGetCharacteristic("a5832454-2445-11ee-be56-0242ac120002", BLERead | BLENotify, EXTRA_INFO_ARRAY_SIZE + PASSWORD_ARRAY_SIZE),
+                         pSetCharacteristic("a5832594-2445-11ee-be56-0242ac120002", BLEWrite, 32),
+                         iSetCharacteristic("a58326e8-2445-11ee-be56-0242ac120002", BLEWrite, 32),
+                         dSetCharacteristic("ebf99fc0-24f5-11ee-be56-0242ac120002", BLEWrite, 32),
+                         extraSetCharacteristic("a5832a62-2445-11ee-be56-0242ac120002", BLEWrite, EXTRA_INFO_ARRAY_SIZE + PASSWORD_ARRAY_SIZE),
+                         ptrArray(_pidArrayPtr),
+                         ptrArraySize(arraySize) {
     setExtraInfo("");
 }
 
@@ -52,7 +70,7 @@ void PIDestalRemoteBLE::initialize(
 
     BLE.addService(pidService);
 
-    lastPID = pidPtr->getPidConsts();
+    lastPID = getFirstPidConsts();
     lastExtra = getExtraInfo();
 
     pGetCharacteristic.writeValue(String(lastPID.p, 8));
@@ -80,8 +98,8 @@ void PIDestalRemoteBLE::process() {
 
 void PIDestalRemoteBLE::updateGetters() {
     // Updating the getters if something changed
-    if (lastPID != pidPtr->getPidConsts()) {
-        lastPID = pidPtr->getPidConsts();
+    if (lastPID != getFirstPidConsts()) {
+        lastPID = getFirstPidConsts();
         pGetCharacteristic.writeValue(String(lastPID.p, 8));
         iGetCharacteristic.writeValue(String(lastPID.i, 8));
         dGetCharacteristic.writeValue(String(lastPID.d, 8));
@@ -121,7 +139,7 @@ void PIDestalRemoteBLE::processReceivedData() {
     }
 
     if (newPID != lastPID)
-        pidPtr->setPidConsts(newPID);
+        setPidArrayConsts(newPID);
 }
 
 bool PIDestalRemoteBLE::checkValidPassword(String buffer) {

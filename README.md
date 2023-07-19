@@ -46,7 +46,7 @@ Example:
 
 PIDestal pid1(0.2, 1, 0.002);
 
-PIDestalRemoteBLE myRemote(pid1);
+PIDestalRemoteBLE myRemote(&pid1);
 
 void setup() {
     Serial.begin(115200);

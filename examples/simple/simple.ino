@@ -15,7 +15,7 @@ PID meuPID = {
 
 PIDestal pid1(meuPID);
 
-PIDestalRemoteBLE myRemote(pid1);
+PIDestalRemoteBLE myRemote(&pid1);
 
 void setup() {
     Serial.begin(115200);
@@ -49,7 +49,7 @@ void loop() {
     Serial.print(objetivo);
     Serial.print("\t");
     Serial.println(result1);
-    
+
     t += 1;
     delay(30);
 }

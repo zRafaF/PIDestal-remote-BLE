@@ -14,6 +14,9 @@
 
 #define PASSWORD_ARRAY_SIZE 6
 
+// How many pids can this class update
+#define PIDS_ARRAY_SIZE 10
+
 #define DEFAULT_SERVICE_UUID "3e60a07c-235e-11ee-be56-0242ac120002"
 
 /*
@@ -30,7 +33,8 @@ Does not care for the extra info
 
 class PIDestalRemoteBLE {
    public:
-    PIDestalRemoteBLE(PIDestal& _pidPtr);
+    PIDestalRemoteBLE(PIDestal* _pidAPtr);
+    PIDestalRemoteBLE(PIDestal* _pidArrayPtr[], int arraySize);
 
     // Initialize should be called during setup()
     void initialize(const char* deviceName, const char* myPassword[PASSWORD_ARRAY_SIZE]);
@@ -39,9 +43,16 @@ class PIDestalRemoteBLE {
     void process();
 
     // Sets the extra info value, it The array should be of size EXTRA_INFO_ARRAY_SIZE
-    void setExtraInfo(char info[EXTRA_INFO_ARRAY_SIZE]) { strcpy(extraInfo, info); }
+    void setExtraInfo(const char* info[EXTRA_INFO_ARRAY_SIZE]) { strcpy(extraInfo, info); }
     void setExtraInfo(String info) { info.toCharArray(extraInfo, EXTRA_INFO_ARRAY_SIZE); }
     char* getExtraInfo() { return extraInfo; }
+
+    PIDestal getFirstPidConsts() { return ptrArray ? ptrArray[0]->getPidConsts() : PIDestal(0, 0, 0); }
+    void setPidArrayConsts(PIDestal newPID) {
+        for (int i = 0; i < ptrArraySize; i++) {
+            ptrArray[i]->setPidConsts(newPID);  // Accessing the x variable of each PIDestal object
+        }
+    }
 
    private:
     bool checkValidPassword(String buffer);
@@ -63,7 +74,9 @@ class PIDestalRemoteBLE {
 
     char extraInfo[EXTRA_INFO_ARRAY_SIZE] = "";
     char password[PASSWORD_ARRAY_SIZE];
-    PIDestal* pidPtr;
+
+    PIDestal** ptrArray;   // Initialize with nullptr
+    int ptrArraySize = 0;  // Initialize with nullptr
 
     BLEService pidService;
 
