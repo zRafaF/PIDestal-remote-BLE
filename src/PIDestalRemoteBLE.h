@@ -51,6 +51,8 @@ class PIDestalRemoteBLE {
     void setPidArrayConsts(PID newPID);
 
     PIDestal** getPidPtrArray() { return pidPtrArray; }
+    void setPidPtrArray(PIDestal* _pidPtr);
+    void setPidPtrArray(PIDestal* _pidArrayPtr[], int arraySize);
 
     // Returns the size of the PID array, there is no setter because it may result in unauthorized address access
     // The only way to set the array size is by setting the whole array with `setPidPtrArray(newPidArray, newPidArraySize);`
