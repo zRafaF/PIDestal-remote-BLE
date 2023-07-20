@@ -21,7 +21,7 @@ PIDestalRemoteBLE::PIDestalRemoteBLE(PIDestal* _pidPtr) : PIDestalRemoteBLE() {
     setPidPtrArray(_pidPtr);
 }
 
-PIDestalRemoteBLE::PIDestalRemoteBLE(PIDestal* _pidArrayPtr[], int arraySize) : PIDestalRemoteBLE() {
+PIDestalRemoteBLE::PIDestalRemoteBLE(PIDestal* _pidArrayPtr[], size_t arraySize) : PIDestalRemoteBLE() {
     setPidPtrArray(_pidArrayPtr, arraySize);
 }
 
@@ -37,7 +37,7 @@ void PIDestalRemoteBLE::setPidPtrArray(PIDestal* _pidPtr) {
     needsToDeleteArray = true;
 }
 
-void PIDestalRemoteBLE::setPidPtrArray(PIDestal* _pidArrayPtr[], int arraySize) {
+void PIDestalRemoteBLE::setPidPtrArray(PIDestal* _pidArrayPtr[], size_t arraySize) {
     deleteOldPidArray();
     pidPtrArray = _pidArrayPtr;
     pidPtrArraySize = arraySize;

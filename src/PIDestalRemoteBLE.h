@@ -33,7 +33,7 @@ class PIDestalRemoteBLE {
     // Delegation constructor, initializes the array with NULL
     PIDestalRemoteBLE();
     PIDestalRemoteBLE(PIDestal* _pidPtr);
-    PIDestalRemoteBLE(PIDestal* _pidArrayPtr[], int arraySize);
+    PIDestalRemoteBLE(PIDestal* _pidArrayPtr[], size_t arraySize);
     ~PIDestalRemoteBLE();
 
     // Initialize should be called during setup()
@@ -52,7 +52,7 @@ class PIDestalRemoteBLE {
 
     PIDestal** getPidPtrArray() { return pidPtrArray; }
     void setPidPtrArray(PIDestal* _pidPtr);
-    void setPidPtrArray(PIDestal* _pidArrayPtr[], int arraySize);
+    void setPidPtrArray(PIDestal* _pidArrayPtr[], size_t arraySize);
 
     // Returns the size of the PID array, there is no setter because it may result in unauthorized address access
     // The only way to set the array size is by setting the whole array with `setPidPtrArray(newPidArray, newPidArraySize);`
@@ -87,7 +87,7 @@ class PIDestalRemoteBLE {
     char password[PASSWORD_ARRAY_SIZE];
 
     PIDestal** pidPtrArray;
-    int pidPtrArraySize = 0;
+    size_t pidPtrArraySize = 0;
     bool needsToDeleteArray = false;
 
     BLEService pidService;
