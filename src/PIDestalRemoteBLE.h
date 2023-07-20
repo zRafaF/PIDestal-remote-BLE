@@ -14,9 +14,6 @@
 
 #define PASSWORD_ARRAY_SIZE 6
 
-// How many pids can this class update
-#define PIDS_ARRAY_SIZE 10
-
 #define DEFAULT_SERVICE_UUID "3e60a07c-235e-11ee-be56-0242ac120002"
 
 /*
@@ -33,8 +30,11 @@ Does not care for the extra info
 
 class PIDestalRemoteBLE {
    public:
+    // Delegation constructor, initializes the array with NULL
+    PIDestalRemoteBLE();
     PIDestalRemoteBLE(PIDestal* _pidPtr);
     PIDestalRemoteBLE(PIDestal* _pidArrayPtr[], int arraySize);
+    ~PIDestalRemoteBLE();
 
     // Initialize should be called during setup()
     void initialize(const char* deviceName, const char* myPassword);
@@ -42,19 +42,28 @@ class PIDestalRemoteBLE {
     // Process should be called during loop()
     void process();
 
+    char* getExtraInfo() { return extraInfo; }
     // Sets the extra info value, it The array should be of size EXTRA_INFO_ARRAY_SIZE
     void setExtraInfo(const char* info) { strcpy(extraInfo, info); }
     void setExtraInfo(String info) { info.toCharArray(extraInfo, EXTRA_INFO_ARRAY_SIZE); }
-    char* getExtraInfo() { return extraInfo; }
 
-    PID getFirstPidConsts() { return ptrArray ? ptrArray[0]->getPidConsts() : PID{0, 0, 0}; }
-    void setPidArrayConsts(PID newPID) {
-        for (int i = 0; i < ptrArraySize; i++) {
-            ptrArray[i]->setPidConsts(newPID);  // Accessing the x variable of each PIDestal object
-        }
-    }
+    PID getFirstPidConsts();
+    void setPidArrayConsts(PID newPID);
+
+    PIDestal** getPidPtrArray() { return pidPtrArray; }
+
+    // Returns the size of the PID array, there is no setter because it may result in unauthorized address access
+    // The only way to set the array size is by setting the whole array with `setPidPtrArray(newPidArray, newPidArraySize);`
+    int getPidPtrArraySize() { return pidPtrArraySize; }
 
    private:
+    void deleteOldPidArray() {
+        if (needsToDeleteArray) {
+            delete[] pidPtrArray;
+            needsToDeleteArray = false;
+        };
+    }
+
     bool checkValidPassword(String buffer);
 
     String extractStringFromData(String buffer);
@@ -75,8 +84,9 @@ class PIDestalRemoteBLE {
     char extraInfo[EXTRA_INFO_ARRAY_SIZE] = "";
     char password[PASSWORD_ARRAY_SIZE];
 
-    PIDestal** ptrArray;   // Initialize with nullptr
-    int ptrArraySize = 0;  // Initialize with nullptr
+    PIDestal** pidPtrArray;
+    int pidPtrArraySize = 0;
+    bool needsToDeleteArray = false;
 
     BLEService pidService;
 
