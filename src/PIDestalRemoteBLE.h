@@ -124,6 +124,8 @@ class PIDestalRemoteBLE {
     BLEStringCharacteristic iSetCharacteristic;
     BLEStringCharacteristic dSetCharacteristic;
     BLEStringCharacteristic extraSetCharacteristic;
+
+    BLEStringCharacteristic callbackIdxSetCharacteristic;
 };
 
 #endif  // PIDESTAL_REMOTE_BLE_H

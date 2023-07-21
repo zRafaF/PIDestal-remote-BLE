@@ -14,6 +14,7 @@ PIDestalRemoteBLE::PIDestalRemoteBLE() : pidService(DEFAULT_SERVICE_UUID),
                                          iSetCharacteristic("a58326e8-2445-11ee-be56-0242ac120002", BLEWrite, 32),
                                          dSetCharacteristic("ebf99fc0-24f5-11ee-be56-0242ac120002", BLEWrite, 32),
                                          extraSetCharacteristic("a5832a62-2445-11ee-be56-0242ac120002", BLEWrite, EXTRA_INFO_ARRAY_SIZE + PASSWORD_ARRAY_SIZE),
+                                         callbackIdxSetCharacteristic("ffa97c40-2764-11ee-be56-0242ac120002", BLEWrite, 8),
                                          pidPtrArray(NULL),
                                          pidPtrArraySize(0) {}
 
@@ -74,6 +75,7 @@ void PIDestalRemoteBLE::initialize(
     pidService.addCharacteristic(iSetCharacteristic);
     pidService.addCharacteristic(dSetCharacteristic);
     pidService.addCharacteristic(extraSetCharacteristic);
+    pidService.addCharacteristic(callbackIdxSetCharacteristic);
 
     BLE.addService(pidService);
 
@@ -89,6 +91,9 @@ void PIDestalRemoteBLE::initialize(
     iSetCharacteristic.writeValue("");
     dSetCharacteristic.writeValue("");
     extraSetCharacteristic.writeValue("");
+
+    callbackIdxSetCharacteristic.writeValue(String(-1));
+
     BLE.advertise();
     Serial.println("Bluetooth® device active, waiting for connections...");
 #endif  // DO_NOT_USE_BLUETOOTH
@@ -122,6 +127,7 @@ void PIDestalRemoteBLE::processReceivedData() {
     String receivedI = iSetCharacteristic.value();
     String receivedD = dSetCharacteristic.value();
     String receivedExtra = extraSetCharacteristic.value();
+    String receivedCallbackIdx = callbackIdxSetCharacteristic.value();
 
     PID newPID = lastPID;
 
@@ -140,13 +146,21 @@ void PIDestalRemoteBLE::processReceivedData() {
         lastReceivedD = receivedD;
     }
 
+    if (newPID != lastPID)
+        setPidArrayConsts(newPID);
+
     if (lastReceivedExtra != receivedExtra && checkValidPassword(receivedExtra)) {
         setExtraInfo(extractStringFromData(receivedExtra));
         lastReceivedExtra = receivedExtra;
     }
 
-    if (newPID != lastPID)
-        setPidArrayConsts(newPID);
+    if (receivedCallbackIdx.length() >= PASSWORD_ARRAY_SIZE && checkValidPassword(receivedCallbackIdx)) {
+        int callbackIdx = extractStringFromData(receivedCallbackIdx).toInt();
+        if (callbackIdx >= 0 && callbackIdx < numOfStoredFunctions) {
+            runFunctionByIndex(callbackIdx);
+        }
+        callbackIdxSetCharacteristic.writeValue(String(-1));
+    }
 }
 
 bool PIDestalRemoteBLE::checkValidPassword(String buffer) {

@@ -79,10 +79,15 @@ Characteristics:
     -   Extra [`String`]: `a5832454-2445-11ee-be56-0242ac120002`.
 
 -   Setters:
+
     -   Constant P [`String`]: `a5832594-2445-11ee-be56-0242ac120002`.
     -   Constant I [`String`]: `a58326e8-2445-11ee-be56-0242ac120002`.
     -   Constant D [`String`]: `ebf99fc0-24f5-11ee-be56-0242ac120002`.
     -   Extra [`String`]: `a5832a62-2445-11ee-be56-0242ac120002`.
+
+-   Others:
+
+    -   callback [`String`]: `ffa97c40-2764-11ee-be56-0242ac120002`.
 
 ### Changing the service UUID
 

@@ -28,7 +28,7 @@ PIDestalRemoteBLE::FunctionPointer functions[] = {print25, printHEEEERE};
 
 void setup() {
     Serial.begin(115200);
-    myRemote.initialize("I_HAVE_CALLBACK_FUNCTIONS", "call123");
+    myRemote.initialize("ESP_BOARD", "123123");
     
     // Functions passed to this function can be called thought Bluetooth
     myRemote.setCallbackFunctions(functions, 2);

@@ -28,7 +28,9 @@
         "future": "cpp",
         "memory": "cpp",
         "functional": "cpp",
-        "istream": "cpp"
+        "istream": "cpp",
+        "bitset": "cpp",
+        "set": "cpp"
     },
     "arduino.path": "C:\\Program Files\\Arduino IDE",
     "arduino.additionalUrls": "",
