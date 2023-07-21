@@ -169,3 +169,23 @@ void PIDestalRemoteBLE::setPidArrayConsts(PID newPID) {
         pidPtrArray[i]->setPidConsts(newPID);  // Accessing the x variable of each PIDestal object
     }
 }
+
+void PIDestalRemoteBLE::setCallbackFunctions(FunctionPointer funcs[], size_t arraySize) {
+    for (size_t i = 0; i < arraySize; ++i) {
+        callbackFunctions[i] = funcs[i];
+    }
+    numOfStoredFunctions = arraySize;
+}
+
+void PIDestalRemoteBLE::setCallbackFunctions(FunctionPointer func) {
+    callbackFunctions[0] = func;
+    numOfStoredFunctions = 1;
+}
+
+void PIDestalRemoteBLE::runFunctionByIndex(size_t index) {
+    if (index < numOfStoredFunctions && callbackFunctions[index]) {
+        callbackFunctions[index]();
+    } else {
+        Serial.println("Invalid function index!");
+    }
+}

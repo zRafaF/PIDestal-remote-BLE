@@ -16,6 +16,8 @@
 
 #define DEFAULT_SERVICE_UUID "3e60a07c-235e-11ee-be56-0242ac120002"
 
+#define MAX_CALLBACK_FUNCTIONS 10
+
 /*
 Minimum received package size.
 
@@ -30,6 +32,9 @@ Does not care for the extra info
 
 class PIDestalRemoteBLE {
    public:
+    // Type def of a function to be called through a callback
+    typedef void (*FunctionPointer)();
+
     // Delegation constructor, initializes the array with NULL
     PIDestalRemoteBLE();
     PIDestalRemoteBLE(PIDestal* _pidPtr);
@@ -41,6 +46,20 @@ class PIDestalRemoteBLE {
 
     // Process should be called during loop()
     void process();
+
+    /*
+        Receives an array of callable functions. The functions stored here can be called through Bluetooth, see  `runFunctionByIndex()`
+
+        Does not pass arguments to these functions.
+        ATTENTION: The max number of functions is defined by the constant "MAX_CALLBACK_FUNCTIONS"
+    */
+    void setCallbackFunctions(FunctionPointer funcs[], size_t arraySize);
+    void setCallbackFunctions(FunctionPointer func);
+
+    /*
+        Runs the function from "callbackFunctions" at index
+    */
+    void runFunctionByIndex(size_t index);
 
     char* getExtraInfo() { return extraInfo; }
     // Sets the extra info value, it The array should be of size EXTRA_INFO_ARRAY_SIZE
@@ -89,6 +108,9 @@ class PIDestalRemoteBLE {
     PIDestal** pidPtrArray;
     size_t pidPtrArraySize = 0;
     bool needsToDeleteArray = false;
+
+    size_t numOfStoredFunctions;  // Number of functions stored
+    FunctionPointer callbackFunctions[MAX_CALLBACK_FUNCTIONS];
 
     BLEService pidService;
 
