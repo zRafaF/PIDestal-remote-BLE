@@ -130,11 +130,9 @@ void PIDestalRemoteBLE::processReceivedData() {
     String receivedExtra = extraSetCharacteristic.value();
     String receivedCallbackIdx = callbackIdxSetCharacteristic.value();
 
-    if (lastReceivedPID != receivedPID && checkValidPassword(lastReceivedPID)) {
-        // newPID.p = extractStringFromData(receivedP).toFloat();
+    if (lastReceivedPID != receivedPID && checkValidPassword(receivedPID)) {
         lastReceivedPID = receivedPID;
-
-        // setPidArrayConsts(newPID);
+        updatePidArrayConsts(extractStringFromData(receivedPID));
     }
 
     if (lastReceivedExtra != receivedExtra && checkValidPassword(receivedExtra)) {
@@ -162,10 +160,28 @@ String PIDestalRemoteBLE::extractStringFromData(String buffer) {
     return buffer.substring(6, buffer.length());
 }
 
-void PIDestalRemoteBLE::setPidArrayConsts(PID newPID) {
-    for (int i = 0; i < pidPtrArraySize; i++) {
+void PIDestalRemoteBLE::updatePidArrayConsts(String receivedString) {
+    DeserializationError error = deserializeJson(setPidDoc, receivedString);
+    if (error) {
+        Serial.print("deserializeJson() failed: ");
+        Serial.println(error.c_str());
+        return;
+    }
+
+    JsonArray pidArray = setPidDoc["pid"];
+
+    for (size_t i = 0; i < pidPtrArraySize; i++) {
+        JsonArray pid = pidArray[i];
+
+        PID newPID = {
+            pid[0],
+            pid[1],
+            pid[2],
+        };
+
         pidPtrArray[i]->setPidConsts(newPID);  // Accessing the x variable of each PIDestal object
     }
+    pidSetCharacteristic.writeValue(receivedString);
 }
 
 void PIDestalRemoteBLE::setCallbackFunctions(FunctionPointer funcs[], size_t arraySize) {

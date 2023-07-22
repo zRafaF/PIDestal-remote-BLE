@@ -10,6 +10,7 @@
 #include <PIDestal.h>
 #include <arduino.h>
 
+#define ARDUINOJSON_USE_DOUBLE 0
 #include "ArduinoJson-v6.21.2.h"
 
 #define EXTRA_INFO_ARRAY_SIZE 64
@@ -69,7 +70,7 @@ class PIDestalRemoteBLE {
     void setExtraInfo(const char* info) { strcpy(extraInfo, info); }
     void setExtraInfo(String info) { info.toCharArray(extraInfo, EXTRA_INFO_ARRAY_SIZE); }
 
-    void setPidArrayConsts(PID newPID);
+    void updatePidArrayConsts(String receivedString);
 
     PIDestal** getPidPtrArray() { return pidPtrArray; }
     void setPidPtrArray(PIDestal* _pidPtr);
@@ -126,6 +127,7 @@ class PIDestalRemoteBLE {
 
     */
     StaticJsonDocument<256> getPidDoc;
+    StaticJsonDocument<256> setPidDoc;
 
     // characteristics
     BLEStringCharacteristic pidGetCharacteristic;
