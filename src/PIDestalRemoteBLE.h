@@ -10,13 +10,17 @@
 #include <PIDestal.h>
 #include <arduino.h>
 
+#define ARDUINOJSON_USE_DOUBLE 0
+#include "ArduinoJson-v6.21.2.h"
+
 #define EXTRA_INFO_ARRAY_SIZE 64
 
 #define PASSWORD_ARRAY_SIZE 6
 
 #define DEFAULT_SERVICE_UUID "3e60a07c-235e-11ee-be56-0242ac120002"
 
-#define MAX_CALLBACK_FUNCTIONS 10
+#define MAX_CALLBACK_FUNCTIONS 16
+#define MAX_PIDS 16
 
 /*
 Minimum received package size.
@@ -66,12 +70,20 @@ class PIDestalRemoteBLE {
     void setExtraInfo(const char* info) { strcpy(extraInfo, info); }
     void setExtraInfo(String info) { info.toCharArray(extraInfo, EXTRA_INFO_ARRAY_SIZE); }
 
-    PID getFirstPidConsts();
-    void setPidArrayConsts(PID newPID);
+    void updatePidArrayConsts(String receivedString);
 
     PIDestal** getPidPtrArray() { return pidPtrArray; }
     void setPidPtrArray(PIDestal* _pidPtr);
     void setPidPtrArray(PIDestal* _pidArrayPtr[], size_t arraySize);
+
+    void setPidPtrArraySize(size_t newSize) {
+        pidPtrArraySize = newSize;
+        pidSizeGetCharacteristic.writeValue(String(newSize));
+    }
+    void setNumOfStoredFunctions(size_t newSize) {
+        numOfStoredFunctions = newSize;
+        callbackSizeGetCharacteristic.writeValue(String(newSize));
+    }
 
     // Returns the size of the PID array, there is no setter because it may result in unauthorized address access
     // The only way to set the array size is by setting the whole array with `setPidPtrArray(newPidArray, newPidArraySize);`
@@ -93,11 +105,9 @@ class PIDestalRemoteBLE {
     void updateGetters();
 
     String lastExtra;
-    PID lastPID;
+    PID lastPID[MAX_PIDS];
 
-    String lastReceivedP;
-    String lastReceivedI;
-    String lastReceivedD;
+    String lastReceivedPID;
     String lastReceivedExtra;
 
     String myDeviceName;
@@ -109,20 +119,29 @@ class PIDestalRemoteBLE {
     size_t pidPtrArraySize = 0;
     bool needsToDeleteArray = false;
 
-    size_t numOfStoredFunctions;  // Number of functions stored
+    size_t numOfStoredFunctions = 0;  // Number of functions stored
     FunctionPointer callbackFunctions[MAX_CALLBACK_FUNCTIONS];
 
     BLEService pidService;
 
+    /*
+    [
+        [1,1,1],
+        [1,1,1],
+        [1,1,1]...
+    ]
+    */
+    DynamicJsonDocument getPidDoc;
+    DynamicJsonDocument setPidDoc;
+
     // characteristics
-    BLEStringCharacteristic pGetCharacteristic;
-    BLEStringCharacteristic iGetCharacteristic;
-    BLEStringCharacteristic dGetCharacteristic;
+    BLEStringCharacteristic pidGetCharacteristic;
     BLEStringCharacteristic extraGetCharacteristic;
 
-    BLEStringCharacteristic pSetCharacteristic;
-    BLEStringCharacteristic iSetCharacteristic;
-    BLEStringCharacteristic dSetCharacteristic;
+    BLEStringCharacteristic pidSizeGetCharacteristic;
+    BLEStringCharacteristic callbackSizeGetCharacteristic;
+
+    BLEStringCharacteristic pidSetCharacteristic;
     BLEStringCharacteristic extraSetCharacteristic;
 
     BLEStringCharacteristic callbackIdxSetCharacteristic;
