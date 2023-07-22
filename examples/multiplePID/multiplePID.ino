@@ -20,6 +20,7 @@ void setup() {
 
 void loop() {
     myRemote.process();
+    
     Serial.print("P: ");
     Serial.print(pid1.getPidConsts().p);
     Serial.print(" i: ");

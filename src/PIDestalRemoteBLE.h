@@ -76,6 +76,15 @@ class PIDestalRemoteBLE {
     void setPidPtrArray(PIDestal* _pidPtr);
     void setPidPtrArray(PIDestal* _pidArrayPtr[], size_t arraySize);
 
+    void setPidPtrArraySize(size_t newSize) {
+        pidPtrArraySize = newSize;
+        pidSizeGetCharacteristic.writeValue(String(newSize));
+    }
+    void setNumOfStoredFunctions(size_t newSize) {
+        numOfStoredFunctions = newSize;
+        callbackSizeGetCharacteristic.writeValue(String(newSize));
+    }
+
     // Returns the size of the PID array, there is no setter because it may result in unauthorized address access
     // The only way to set the array size is by setting the whole array with `setPidPtrArray(newPidArray, newPidArraySize);`
     int getPidPtrArraySize() { return pidPtrArraySize; }
@@ -110,7 +119,7 @@ class PIDestalRemoteBLE {
     size_t pidPtrArraySize = 0;
     bool needsToDeleteArray = false;
 
-    size_t numOfStoredFunctions;  // Number of functions stored
+    size_t numOfStoredFunctions = 0;  // Number of functions stored
     FunctionPointer callbackFunctions[MAX_CALLBACK_FUNCTIONS];
 
     BLEService pidService;
@@ -132,6 +141,9 @@ class PIDestalRemoteBLE {
     // characteristics
     BLEStringCharacteristic pidGetCharacteristic;
     BLEStringCharacteristic extraGetCharacteristic;
+
+    BLEStringCharacteristic pidSizeGetCharacteristic;
+    BLEStringCharacteristic callbackSizeGetCharacteristic;
 
     BLEStringCharacteristic pidSetCharacteristic;
     BLEStringCharacteristic extraSetCharacteristic;

@@ -8,6 +8,8 @@
 PIDestalRemoteBLE::PIDestalRemoteBLE() : pidService(DEFAULT_SERVICE_UUID),
                                          pidGetCharacteristic("a5831824-2445-11ee-be56-0242ac120002", BLERead | BLENotify, 256),
                                          extraGetCharacteristic("a5832454-2445-11ee-be56-0242ac120002", BLERead | BLENotify, EXTRA_INFO_ARRAY_SIZE + PASSWORD_ARRAY_SIZE),
+                                         pidSizeGetCharacteristic("a3436b32-284a-11ee-be56-0242ac120002", BLERead | BLENotify, 16),
+                                         callbackSizeGetCharacteristic("ba29fc12-284a-11ee-be56-0242ac120002", BLERead | BLENotify, 16),
                                          pidSetCharacteristic("a5832594-2445-11ee-be56-0242ac120002", BLEWrite, 256),
                                          extraSetCharacteristic("a5832a62-2445-11ee-be56-0242ac120002", BLEWrite, EXTRA_INFO_ARRAY_SIZE + PASSWORD_ARRAY_SIZE),
                                          callbackIdxSetCharacteristic("ffa97c40-2764-11ee-be56-0242ac120002", BLEWrite, 8),
@@ -29,7 +31,7 @@ PIDestalRemoteBLE::~PIDestalRemoteBLE() {
 void PIDestalRemoteBLE::setPidPtrArray(PIDestal* _pidPtr) {
     deleteOldPidArray();
     pidPtrArray = new PIDestal*[1];
-    pidPtrArraySize = 1;
+    setPidPtrArraySize(1);
     pidPtrArray[0] = _pidPtr;
     needsToDeleteArray = true;
 }
@@ -37,7 +39,7 @@ void PIDestalRemoteBLE::setPidPtrArray(PIDestal* _pidPtr) {
 void PIDestalRemoteBLE::setPidPtrArray(PIDestal* _pidArrayPtr[], size_t arraySize) {
     deleteOldPidArray();
     pidPtrArray = _pidArrayPtr;
-    pidPtrArraySize = arraySize;
+    setPidPtrArraySize(arraySize);
 }
 
 void PIDestalRemoteBLE::initialize(
@@ -65,6 +67,8 @@ void PIDestalRemoteBLE::initialize(
 
     pidService.addCharacteristic(pidGetCharacteristic);
     pidService.addCharacteristic(extraGetCharacteristic);
+    pidService.addCharacteristic(pidSizeGetCharacteristic);
+    pidService.addCharacteristic(callbackSizeGetCharacteristic);
     pidService.addCharacteristic(pidSetCharacteristic);
     pidService.addCharacteristic(extraSetCharacteristic);
     pidService.addCharacteristic(callbackIdxSetCharacteristic);
@@ -73,8 +77,11 @@ void PIDestalRemoteBLE::initialize(
 
     lastExtra = getExtraInfo();
 
-    pidGetCharacteristic.writeValue(String(""));
+    pidGetCharacteristic.writeValue("");
     extraGetCharacteristic.writeValue(lastExtra);
+
+    pidSizeGetCharacteristic.writeValue(String(pidPtrArraySize));
+    callbackSizeGetCharacteristic.writeValue(String(numOfStoredFunctions));
 
     pidSetCharacteristic.writeValue("");
     extraSetCharacteristic.writeValue("");
@@ -188,12 +195,12 @@ void PIDestalRemoteBLE::setCallbackFunctions(FunctionPointer funcs[], size_t arr
     for (size_t i = 0; i < arraySize; ++i) {
         callbackFunctions[i] = funcs[i];
     }
-    numOfStoredFunctions = arraySize;
+    setNumOfStoredFunctions(arraySize);
 }
 
 void PIDestalRemoteBLE::setCallbackFunctions(FunctionPointer func) {
     callbackFunctions[0] = func;
-    numOfStoredFunctions = 1;
+    setNumOfStoredFunctions(1);
 }
 
 void PIDestalRemoteBLE::runFunctionByIndex(size_t index) {
