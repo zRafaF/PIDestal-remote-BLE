@@ -20,7 +20,8 @@ void setup() {
 
 void loop() {
     myRemote.process();
-    
+
+    /*
     Serial.print("P: ");
     Serial.print(pid1.getPidConsts().p);
     Serial.print(" i: ");
@@ -34,6 +35,6 @@ void loop() {
     Serial.print(pid2.getPidConsts().i);
     Serial.print(" d: ");
     Serial.println(pid2.getPidConsts().d);
-
+  */
     delay(30);
 }

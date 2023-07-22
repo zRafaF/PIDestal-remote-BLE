@@ -188,6 +188,7 @@ void PIDestalRemoteBLE::updatePidArrayConsts(String receivedString) {
 
         pidPtrArray[i]->setPidConsts(newPID);  // Accessing the x variable of each PIDestal object
     }
+    Serial.println(receivedString);
     pidSetCharacteristic.writeValue(receivedString);
 }
 
