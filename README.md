@@ -28,6 +28,8 @@ You need to install the following libraries:
 
 > The versions are the ones that were tested and worked, you can try to get a newer version.
 
+> This library also includes the library [ArduinoJson](https://github.com/bblanchon/ArduinoJson)
+
 ### Code
 
 1. Create a new `PIDestalRemoteBLE` object and pass a `PIDestal` object by reference, PIDestalRemoteBLE will modify the PID values and keep the server updated.

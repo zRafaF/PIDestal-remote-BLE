@@ -10,13 +10,16 @@
 #include <PIDestal.h>
 #include <arduino.h>
 
+#include "ArduinoJson-v6.21.2.h"
+
 #define EXTRA_INFO_ARRAY_SIZE 64
 
 #define PASSWORD_ARRAY_SIZE 6
 
 #define DEFAULT_SERVICE_UUID "3e60a07c-235e-11ee-be56-0242ac120002"
 
-#define MAX_CALLBACK_FUNCTIONS 10
+#define MAX_CALLBACK_FUNCTIONS 16
+#define MAX_PIDS 16
 
 /*
 Minimum received package size.
@@ -66,7 +69,6 @@ class PIDestalRemoteBLE {
     void setExtraInfo(const char* info) { strcpy(extraInfo, info); }
     void setExtraInfo(String info) { info.toCharArray(extraInfo, EXTRA_INFO_ARRAY_SIZE); }
 
-    PID getFirstPidConsts();
     void setPidArrayConsts(PID newPID);
 
     PIDestal** getPidPtrArray() { return pidPtrArray; }
@@ -93,11 +95,9 @@ class PIDestalRemoteBLE {
     void updateGetters();
 
     String lastExtra;
-    PID lastPID;
+    PID lastPID[MAX_PIDS];
 
-    String lastReceivedP;
-    String lastReceivedI;
-    String lastReceivedD;
+    String lastReceivedPID;
     String lastReceivedExtra;
 
     String myDeviceName;
@@ -114,15 +114,24 @@ class PIDestalRemoteBLE {
 
     BLEService pidService;
 
+    /*
+    {
+        "pid":[
+            [1,1,1],
+            [1,1,1],
+            [1,1,1]...
+        ]
+    }
+
+
+    */
+    StaticJsonDocument<256> getPidDoc;
+
     // characteristics
-    BLEStringCharacteristic pGetCharacteristic;
-    BLEStringCharacteristic iGetCharacteristic;
-    BLEStringCharacteristic dGetCharacteristic;
+    BLEStringCharacteristic pidGetCharacteristic;
     BLEStringCharacteristic extraGetCharacteristic;
 
-    BLEStringCharacteristic pSetCharacteristic;
-    BLEStringCharacteristic iSetCharacteristic;
-    BLEStringCharacteristic dSetCharacteristic;
+    BLEStringCharacteristic pidSetCharacteristic;
     BLEStringCharacteristic extraSetCharacteristic;
 
     BLEStringCharacteristic callbackIdxSetCharacteristic;

@@ -6,13 +6,9 @@
 #include "PIDestalRemoteBLE.h"
 
 PIDestalRemoteBLE::PIDestalRemoteBLE() : pidService(DEFAULT_SERVICE_UUID),
-                                         pGetCharacteristic("a5831824-2445-11ee-be56-0242ac120002", BLERead | BLENotify, 32),
-                                         iGetCharacteristic("a5831c2a-2445-11ee-be56-0242ac120002", BLERead | BLENotify, 32),
-                                         dGetCharacteristic("665e5ab6-24f7-11ee-be56-0242ac120002", BLERead | BLENotify, 32),
+                                         pidGetCharacteristic("a5831824-2445-11ee-be56-0242ac120002", BLERead | BLENotify, 256),
                                          extraGetCharacteristic("a5832454-2445-11ee-be56-0242ac120002", BLERead | BLENotify, EXTRA_INFO_ARRAY_SIZE + PASSWORD_ARRAY_SIZE),
-                                         pSetCharacteristic("a5832594-2445-11ee-be56-0242ac120002", BLEWrite, 32),
-                                         iSetCharacteristic("a58326e8-2445-11ee-be56-0242ac120002", BLEWrite, 32),
-                                         dSetCharacteristic("ebf99fc0-24f5-11ee-be56-0242ac120002", BLEWrite, 32),
+                                         pidSetCharacteristic("a5832594-2445-11ee-be56-0242ac120002", BLEWrite, 256),
                                          extraSetCharacteristic("a5832a62-2445-11ee-be56-0242ac120002", BLEWrite, EXTRA_INFO_ARRAY_SIZE + PASSWORD_ARRAY_SIZE),
                                          callbackIdxSetCharacteristic("ffa97c40-2764-11ee-be56-0242ac120002", BLEWrite, 8),
                                          pidPtrArray(NULL),
@@ -67,29 +63,20 @@ void PIDestalRemoteBLE::initialize(
 
     BLE.setAdvertisedService(pidService);
 
-    pidService.addCharacteristic(pGetCharacteristic);
-    pidService.addCharacteristic(iGetCharacteristic);
-    pidService.addCharacteristic(dGetCharacteristic);
+    pidService.addCharacteristic(pidGetCharacteristic);
     pidService.addCharacteristic(extraGetCharacteristic);
-    pidService.addCharacteristic(pSetCharacteristic);
-    pidService.addCharacteristic(iSetCharacteristic);
-    pidService.addCharacteristic(dSetCharacteristic);
+    pidService.addCharacteristic(pidSetCharacteristic);
     pidService.addCharacteristic(extraSetCharacteristic);
     pidService.addCharacteristic(callbackIdxSetCharacteristic);
 
     BLE.addService(pidService);
 
-    lastPID = getFirstPidConsts();
     lastExtra = getExtraInfo();
 
-    pGetCharacteristic.writeValue(String(lastPID.p, 8));
-    iGetCharacteristic.writeValue(String(lastPID.i, 8));
-    dGetCharacteristic.writeValue(String(lastPID.d, 8));
+    pidGetCharacteristic.writeValue(String(""));
     extraGetCharacteristic.writeValue(lastExtra);
 
-    pSetCharacteristic.writeValue("");
-    iSetCharacteristic.writeValue("");
-    dSetCharacteristic.writeValue("");
+    pidSetCharacteristic.writeValue("");
     extraSetCharacteristic.writeValue("");
 
     callbackIdxSetCharacteristic.writeValue(String(-1));
@@ -109,12 +96,28 @@ void PIDestalRemoteBLE::process() {
 }
 
 void PIDestalRemoteBLE::updateGetters() {
+    bool needsToUpdatePID = false;
+    for (size_t i = 0; i < pidPtrArraySize; i++) {
+        const PID currentPID = pidPtrArray[i]->getPidConsts();
+        if (lastPID[i] != currentPID) {
+            needsToUpdatePID = true;
+        }
+        lastPID[i] = currentPID;
+    }
     // Updating the getters if something changed
-    if (lastPID != getFirstPidConsts()) {
-        lastPID = getFirstPidConsts();
-        pGetCharacteristic.writeValue(String(lastPID.p, 8));
-        iGetCharacteristic.writeValue(String(lastPID.i, 8));
-        dGetCharacteristic.writeValue(String(lastPID.d, 8));
+    if (needsToUpdatePID) {
+        // Creates an object "pid"
+        JsonArray pid = getPidDoc.createNestedArray("pid");
+        for (size_t i = 0; i < pidPtrArraySize; i++) {
+            // Creates a nested array in pid
+            JsonArray pid_array = pid.createNestedArray();
+            pid_array.add(lastPID[i].p);
+            pid_array.add(lastPID[i].i);
+            pid_array.add(lastPID[i].d);
+        }
+        String serializedString;
+        serializeJson(getPidDoc, serializedString);
+        pidGetCharacteristic.writeValue(serializedString);
     }
     if (lastExtra != getExtraInfo()) {
         lastExtra = getExtraInfo();
@@ -123,31 +126,16 @@ void PIDestalRemoteBLE::updateGetters() {
 }
 
 void PIDestalRemoteBLE::processReceivedData() {
-    String receivedP = pSetCharacteristic.value();
-    String receivedI = iSetCharacteristic.value();
-    String receivedD = dSetCharacteristic.value();
+    String receivedPID = pidSetCharacteristic.value();
     String receivedExtra = extraSetCharacteristic.value();
     String receivedCallbackIdx = callbackIdxSetCharacteristic.value();
 
-    PID newPID = lastPID;
+    if (lastReceivedPID != receivedPID && checkValidPassword(lastReceivedPID)) {
+        // newPID.p = extractStringFromData(receivedP).toFloat();
+        lastReceivedPID = receivedPID;
 
-    if (lastReceivedP != receivedP && checkValidPassword(receivedP)) {
-        newPID.p = extractStringFromData(receivedP).toFloat();
-        lastReceivedP = receivedP;
+        // setPidArrayConsts(newPID);
     }
-
-    if (lastReceivedI != receivedI && checkValidPassword(receivedI)) {
-        newPID.i = extractStringFromData(receivedI).toFloat();
-        lastReceivedI = receivedI;
-    }
-
-    if (lastReceivedD != receivedD && checkValidPassword(receivedD)) {
-        newPID.d = extractStringFromData(receivedD).toFloat();
-        lastReceivedD = receivedD;
-    }
-
-    if (newPID != lastPID)
-        setPidArrayConsts(newPID);
 
     if (lastReceivedExtra != receivedExtra && checkValidPassword(receivedExtra)) {
         setExtraInfo(extractStringFromData(receivedExtra));
@@ -172,10 +160,6 @@ bool PIDestalRemoteBLE::checkValidPassword(String buffer) {
 
 String PIDestalRemoteBLE::extractStringFromData(String buffer) {
     return buffer.substring(6, buffer.length());
-}
-
-PID PIDestalRemoteBLE::getFirstPidConsts() {
-    return pidPtrArray ? pidPtrArray[0]->getPidConsts() : PID{0, 0, 0};
 }
 
 void PIDestalRemoteBLE::setPidArrayConsts(PID newPID) {
