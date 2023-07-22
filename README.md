@@ -17,6 +17,22 @@ For utilization examples please check out the `examples` directory.
 
 > Currently the data is formatted to a string and is sent with **8 decimal places** of precision.
 
+The PID getter and setter is passed through a serialized JSON using [ArduinoJson](https://github.com/bblanchon/ArduinoJson). The data is sent via the following format:
+
+```json
+    {
+        "pid":[
+            [1,1,1],
+            [1,1,1],
+            [1,1,1]...
+        ]
+    }
+```
+
+This way it's possible to get and set multiple PIDs constants.
+
+> ATTENTION: The max send buffer size is `256` bytes, so basically 256 characters in the JSON string.
+
 ## Usage
 
 ### Setup
@@ -75,16 +91,12 @@ Characteristics:
 
 -   Getters:
 
-    -   Constant P [`String`]: `a5831824-2445-11ee-be56-0242ac120002`.
-    -   Constant I [`String`]: `a5831c2a-2445-11ee-be56-0242ac120002`.
-    -   Constant D [`String`]: `665e5ab6-24f7-11ee-be56-0242ac120002`.
+    -   PID [`String`]: `a5831824-2445-11ee-be56-0242ac120002`.
     -   Extra [`String`]: `a5832454-2445-11ee-be56-0242ac120002`.
 
 -   Setters:
 
-    -   Constant P [`String`]: `a5832594-2445-11ee-be56-0242ac120002`.
-    -   Constant I [`String`]: `a58326e8-2445-11ee-be56-0242ac120002`.
-    -   Constant D [`String`]: `ebf99fc0-24f5-11ee-be56-0242ac120002`.
+    -   PID [`String`]: `a5832594-2445-11ee-be56-0242ac120002`.
     -   Extra [`String`]: `a5832a62-2445-11ee-be56-0242ac120002`.
 
 -   Others:
