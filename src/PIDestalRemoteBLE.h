@@ -125,18 +125,14 @@ class PIDestalRemoteBLE {
     BLEService pidService;
 
     /*
-    {
-        "pid":[
-            [1,1,1],
-            [1,1,1],
-            [1,1,1]...
-        ]
-    }
-
-
+    [
+        [1,1,1],
+        [1,1,1],
+        [1,1,1]...
+    ]
     */
-    StaticJsonDocument<256> getPidDoc;
-    StaticJsonDocument<256> setPidDoc;
+    DynamicJsonDocument getPidDoc;
+    DynamicJsonDocument setPidDoc;
 
     // characteristics
     BLEStringCharacteristic pidGetCharacteristic;

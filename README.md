@@ -20,13 +20,11 @@ For utilization examples please check out the `examples` directory.
 The PID getter and setter is passed through a serialized JSON using [ArduinoJson](https://github.com/bblanchon/ArduinoJson). The data is sent via the following format:
 
 ```json
-    {
-        "pid":[
-            [1,1,1],
-            [1,1,1],
-            [1,1,1]...
-        ]
-    }
+[
+    [1,1,1],
+    [1,1,1],
+    [1,1,1]...
+]
 ```
 
 This way it's possible to get and set multiple PIDs constants.

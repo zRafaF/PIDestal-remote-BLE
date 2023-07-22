@@ -14,7 +14,9 @@ PIDestalRemoteBLE::PIDestalRemoteBLE() : pidService(DEFAULT_SERVICE_UUID),
                                          extraSetCharacteristic("a5832a62-2445-11ee-be56-0242ac120002", BLEWrite, EXTRA_INFO_ARRAY_SIZE + PASSWORD_ARRAY_SIZE),
                                          callbackIdxSetCharacteristic("ffa97c40-2764-11ee-be56-0242ac120002", BLEWrite, 8),
                                          pidPtrArray(NULL),
-                                         pidPtrArraySize(0) {}
+                                         pidPtrArraySize(0),
+                                         getPidDoc(256),
+                                         setPidDoc(256) {}
 
 PIDestalRemoteBLE::PIDestalRemoteBLE(PIDestal* _pidPtr) : PIDestalRemoteBLE() {
     setPidPtrArray(_pidPtr);
@@ -114,15 +116,17 @@ void PIDestalRemoteBLE::updateGetters() {
     // Updating the getters if something changed
     if (needsToUpdatePID) {
         // Creates an object "pid"
-        JsonArray pid = getPidDoc.createNestedArray("pid");
+        JsonArray pid = getPidDoc.to<JsonArray>();
+
         for (size_t i = 0; i < pidPtrArraySize; i++) {
             // Creates a nested array in pid
             JsonArray pid_array = pid.createNestedArray();
+
             pid_array.add(lastPID[i].p);
             pid_array.add(lastPID[i].i);
             pid_array.add(lastPID[i].d);
         }
-        String serializedString;
+        String serializedString = "";
         serializeJson(getPidDoc, serializedString);
         pidGetCharacteristic.writeValue(serializedString);
     }
@@ -175,10 +179,8 @@ void PIDestalRemoteBLE::updatePidArrayConsts(String receivedString) {
         return;
     }
 
-    JsonArray pidArray = setPidDoc["pid"];
-
     for (size_t i = 0; i < pidPtrArraySize; i++) {
-        JsonArray pid = pidArray[i];
+        JsonArray pid = setPidDoc[i];
 
         PID newPID = {
             pid[0],
@@ -188,7 +190,6 @@ void PIDestalRemoteBLE::updatePidArrayConsts(String receivedString) {
 
         pidPtrArray[i]->setPidConsts(newPID);  // Accessing the x variable of each PIDestal object
     }
-    Serial.println(receivedString);
     pidSetCharacteristic.writeValue(receivedString);
 }
 
